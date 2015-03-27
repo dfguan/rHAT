@@ -11,12 +11,6 @@
 
 
 
-#define GAPOPEN 2
-#define GAPEXTENDED 1
-#define MISMATCH 5
-#define MATCH 1
-
-
 #define SELECT_NUM 10
 
 
@@ -80,7 +74,15 @@ Aligner::Aligner(opts *_opt)
 		exit(1);
 	}
 
+	//initiate ksw parameters
 
+	int k;
+	for (int i = k = 0; i < 4; ++i) {
+		for (int j = 0; j < 4; ++j)
+			mat[k++] = i == j? opt->match : -opt->mismatch;
+		mat[k++] = 0; // ambiguous base
+	}
+	for (int j = 0; j < 5; ++j) mat[k++] = 0;
 	//aligner = new Simpledp(len_sed,writecigar,cigarbuffer,LEN_LIMIT<<1,nextcigarBuffer,LEN_LIMIT<<1, &usedcigarsize);
 	//if (NULL == aligner) {
 	//	cout<<"Error when Applying for new space, now exit..."<<endl;
@@ -379,7 +381,7 @@ int Aligner::conductAlign(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhas
 		}			
 
 		flag = gra.applyGraphic(usedhash, genome+left_start, extract_length, _usedread, trunk->seq.l,&score,opt->waitingLen, left_start,rc,Start_pos,ChrName,
-				countChr, sams, countSam);
+				countChr, sams, countSam, mat, opt->gapopen, opt->gapextend);
 
 		if ( 1 == flag) {
 			sign = 1;
@@ -425,7 +427,7 @@ int Aligner::conductAlign(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhas
 			}
 
 			flag = gra.applyGraphic(usedhash, genome+left_start, extract_length, _usedread, trunk->seq.l,&score,opt->waitingLen<<1, left_start,rc,Start_pos,ChrName,
-					countChr, sams, countSam);
+					countChr, sams, countSam, mat, opt->gapopen, opt->gapextend);
 			if (flag == 1)  {
 				++countSam;
 				sign = 1;
@@ -547,7 +549,7 @@ int Aligner::conductAlign(kseq_t *trunk, char *read, char *rcRead, int lenRead, 
 		}			
 
 		flag = gra.applyGraphic(usedhash, genome+left_start, extract_length, _usedread, lenRead,&score,opt->waitingLen,left_start,rc,Start_pos,ChrName,
-				countChr, svsamsp, countSam);
+				countChr, svsamsp, countSam, mat, opt->gapopen, opt->gapextend);
 
 		if ( 1 == flag) {
 			sign = 1;
@@ -672,12 +674,12 @@ int Aligner::connect(Sam_Rec *rec1, Sam_Rec *rec2, kseq_t *trunk)
 		if (read_len != 0) {
 			sprintf(tempCigar,"%dI",read_len);
 			transitionPart.append(tempCigar);
-			bscore = GAPOPEN + (read_len - 1)*GAPEXTENDED;
+			bscore = opt->gapopen + (read_len - 1)*opt->gapextend;
 		} else {
 			if (0 != ref_len) {
 				sprintf(tempCigar,"%dD",ref_len);
 				transitionPart.append(tempCigar);
-				bscore = GAPOPEN + (ref_len - 1)*GAPEXTENDED;
+				bscore = opt->gapopen + (ref_len - 1)*opt->gapextend;
 			}
 		}
 	} else {
@@ -697,8 +699,8 @@ int Aligner::connect(Sam_Rec *rec1, Sam_Rec *rec2, kseq_t *trunk)
 		uint32_t 	*cigar;
 		int 		n_cigar = 0;
 		int w = read_len > ref_len ? read_len : ref_len;
-		
-		bscore = ksw_global(read_len,readqry_,ref_len,refqry_,5,mat,GAPOPEN,GAPEXTENDED,w,&n_cigar,&cigar);
+		//opt->gap open according to address method it may be slow, it will be changed soon
+		bscore = ksw_global(read_len,readqry_,ref_len,refqry_,5,mat,opt->gapopen,opt->gapextend,w,&n_cigar,&cigar);
 
 		//fprintf(stderr,"%d %d %d %d %d %d\n",order[i-1],order[i],read_len,ref_len,score, n_cigar);
 		for (int z=0;z<n_cigar;++z) {
@@ -1020,7 +1022,7 @@ void Aligner::Runtask()
 
 	//output header
 	cout<<"@HD\tVN:"<<"v.15.01"<<endl;
-	for (int i=1;i<=countChr;++i) {cout<<"@SQ\tSN:"<<ChrName[i]<<"\tLN:"<<Start_pos[i]-Start_pos[i-1]<<endl;}
+	for (int i=1;i<countChr;++i) {cout<<"@SQ\tSN:"<<ChrName[i]<<"\tLN:"<<Start_pos[i]-Start_pos[i-1]<<endl;}
 	cout<<"@PG\tID:rHAT-mapper\tVN:v.15.01\tCL:";
 	for (int i=0;i<opt->argc;++i) {cout<<opt->argv[i]<<" ";}
 	cout<<endl;	

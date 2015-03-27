@@ -66,6 +66,7 @@ class Aligner {
 	char 		**ChrName;//readable
 	uint32_t 	Start_pos[100];//readable
 	opts 		*opt;//readable
+	int8_t 		mat[25];
 public:
 	Aligner(opts *opt);
 	~Aligner();

@@ -19,6 +19,12 @@ typedef struct options {
 	int 		argc;
 	char 		**argv;
 
+	//ksw paramters
+	int 		gapopen;
+	int			gapextend;
+	int			match;
+	int 		mismatch;
+	
 }opts;
 
 

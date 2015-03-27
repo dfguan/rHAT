@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 {
 
 #ifdef PRINT_LOG
-	fprintf(stderr,"%s [exp] started\n",getCurrentDateTime().c_str());
+	fprintf(stderr,"%s [rHAT-mapper] started\n",getCurrentDateTime().c_str());
 #endif
 	
 	opts *opt = new opts;
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	if ( NULL != opt ) delete opt;
 
 #ifdef PRINT_LOG
-	fprintf(stderr,"%s [exp] ended\n",getCurrentDateTime().c_str());
+	fprintf(stderr,"%s [rHAT-mapper] ended\n",getCurrentDateTime().c_str());
 	//fclose(stderr);
 #endif	
 	return 0;

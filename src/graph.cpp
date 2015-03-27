@@ -13,13 +13,10 @@ using namespace std;
 
 #define ACCEPT_VERTEX 20
 #define VERTEX_LIMIT 10000
-#define GAPOPEN 2
-#define GAPEXTENDED 1
-#define MISMATCH 5
-#define MATCH 1
+
 //forelen should be less than 7 and bigger than 5
 
-uint8_t seq_nt4_tablet[256] = {
+const uint8_t seq_nt4_tablet[256] = {
 	4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
 	4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
 	4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,
@@ -55,13 +52,13 @@ uint8_t transTable[] = {
 	4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4, 
 	4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4,  4, 4, 4, 4
 };
-const int8_t mat[] = {
-	1,-5,-5,-5,0,
-	-5,1,-5,-5,0,
-	-5,-5,1,-5,0,
-	-5,-5,-5,1,0,
-	 0, 0, 0,0,0
-};
+// const int8_t mat[] = {
+// 	1,-5,-5,-5,0,
+// 	-5,1,-5,-5,0,
+// 	-5,-5,1,-5,0,
+// 	-5,-5,-5,1,0,
+// 	 0, 0, 0,0,0
+// };
 
 
 
@@ -259,7 +256,7 @@ uint16_t binsearchPos(uint16_t sval,uint16_t low,uint16_t high,uint16_t *bkt)
 }
 
 int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen, 
- uint32_t left_start,bool rc, uint32_t *startPos, char **chrName, int countChr, Sam_Rec *sam, int countSam) 
+ uint32_t left_start,bool rc, uint32_t *startPos, char **chrName, int countChr, Sam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape) 
 {
 	uint16_t seq_counter[lenRef];// = new uint16_t[lenRef];
 	uint16_t p2startPos[lenRef]; //= new uint16_t [lenRef];
@@ -295,7 +292,7 @@ int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char
 			return -1;
 		createLimVertex(rhashtab->seq_num,ref,lenRef,read,lenRead,seq_counter,p2startPos, rhashtab->len_sed, head,tail);	
 	} 
-	return dealGraph(lenRef, lenRead, read, ref, score, waitingLen, left_start, rc, startPos, chrName, countChr, sam, countSam);
+	return dealGraph(lenRef, lenRead, read, ref, score, waitingLen, left_start, rc, startPos, chrName, countChr, sam, countSam, mat, gapo, gape);
 }
 
 void Graphic::buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uint16_t *seq_counter, uint16_t *p2startPos)
@@ -615,7 +612,7 @@ int 	Graphic::transIntoDec(uint8_t *transtr,char *str, int length)
 }
 
 int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t totalReadlen, char *ref, uint32_t totalReflen, uint32_t left_start,
-		bool rc, uint32_t *chrStartP, char **chrName, int countChr, Sam_Rec *sams, int countSam)
+		bool rc, uint32_t *chrStartP, char **chrName, int countChr, Sam_Rec *sams, int countSam, int8_t *mat, int gapo, int gape)
 {
 	//calculate 0 to order[order_len-1];
 	//fprintf(stderr,"len%d",order_len);
@@ -676,7 +673,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		readqry_ = readqry;
 		refqry_ = refqry;
 		
-		sams[countSam].headScore = ksw_extend2_core(read_len, readqry_, ref_len, refqry_, 5, mat, GAPOPEN, GAPEXTENDED, 10, node[order[order_len-1]].len, 5, &qlen, &tlen, &n_cigar, &cigar);
+		sams[countSam].headScore = ksw_extend2_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 10, node[order[order_len-1]].len, 5, &qlen, &tlen, &n_cigar, &cigar);
 		//cout<<node[order[order_len-1]].ref_seq<<'\t'<<tlen<<"\t";
 		//cout<<score<<endl;
 		
@@ -759,7 +756,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 				//sams[countSam]._cigar[startPosCigar] = 'D'; 
 				//++startPosCigar; 
 				sams[countSam].bodyCigar.append(trans_cigar);
-				sams[countSam].bodyScore -= GAPOPEN + (read_len - 1)*GAPEXTENDED;
+				sams[countSam].bodyScore -= gapo + (read_len - 1)*gape;
 				//cout<<"\t"<<score<<'\t'<<"2"<<endl;
 
 			} else if (0 != ref_len) {
@@ -767,7 +764,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 				//sams[countSam]._cigar[startPosCigar] = 'I'; 
 				//++startPosCigar; 
 				sams[countSam].bodyCigar.append(trans_cigar);
-				sams[countSam].bodyScore -= GAPOPEN + (ref_len - 1)*GAPEXTENDED;
+				sams[countSam].bodyScore -= gapo + (ref_len - 1)*gape;
 			}
 
 		} else {
@@ -781,7 +778,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 
 			w = read_len > ref_len ? read_len : ref_len;
 			
-			sams[countSam].bodyScore += ksw_global(read_len,readqry_,ref_len,refqry_,5,mat,GAPOPEN,GAPEXTENDED,w,&n_cigar,&cigar);
+			sams[countSam].bodyScore += ksw_global(read_len,readqry_,ref_len,refqry_,5,mat,gapo,gape,w,&n_cigar,&cigar);
 
 			//fprintf(stderr,"%d %d %d %d %d %d\n",order[i-1],order[i],read_len,ref_len,score, n_cigar);
 			for (int z=0;z<n_cigar;++z) {
@@ -822,7 +819,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		readqry_ = readqry;
 		refqry_ = refqry;
 		
-		sams[countSam].tailScore += ksw_extend2_core(read_len, readqry_, ref_len, refqry_, 5, mat, GAPOPEN, GAPEXTENDED, read_len, node[order[1]].len, 5, &qlen, &tlen, &n_cigar, &cigar);
+		sams[countSam].tailScore += ksw_extend2_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, read_len, node[order[1]].len, 5, &qlen, &tlen, &n_cigar, &cigar);
 		//score += ksw_global(read_len,readStartP,ref_len,refStartP,5,mat,GAPOPEN,GAPEXTENDED,read_len,&n_cigar,&cigar);
 		//fprintf(stderr,"%d\n",score);
 		for (int z=0;z<n_cigar;++z) {
@@ -846,6 +843,9 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//cout<<sams[countSam]._cigar<<endl;
 	return 1;
 }
+
+
+
 int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,bool type, vertex *vnode)
 {	
 	vertex start,end;
@@ -1029,7 +1029,7 @@ int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,boo
 
 
 int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref, int *score, uint32_t waitingLen, uint32_t left_start,
-		bool rc, uint32_t *startPos, char **chrName, int countChr, Sam_Rec *sam, int countSam)
+		bool rc, uint32_t *startPos, char **chrName, int countChr, Sam_Rec *sam, int countSam, int8_t *matrix, int gapo, int gape)
 {	
 	vertex start,end;
 	start.read_seq = 0;
@@ -1193,7 +1193,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 	
 	//fprintf(stderr,"%d",counterofRightOrder);
 	//return 1;
-	return CalEditDistancewithCigar(rightOrder, counterofRightOrder, read, lenRead, ref, lenRef,left_start,rc,startPos,chrName,countChr,sam, countSam);
+	return CalEditDistancewithCigar(rightOrder, counterofRightOrder, read, lenRead, ref, lenRef,left_start,rc,startPos,chrName,countChr,sam, countSam, matrix, gapo, gape);
 	
 	//get the right order of sequence (rightOrder[] and a counter )
 	//ask for revread[200] revref[200] revcigarbuf[401]
