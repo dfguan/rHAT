@@ -5,7 +5,7 @@ LDFLAGS= -lz -lm
 ECPPSOURCES=main.cpp aligner.cpp graph.cpp  readfl.cpp hash.cpp form.cpp 
 CSOURCES=ksw.c 
 EOBJECTS=$(ECPPSOURCES:.cpp=.o) $(CSOURCES:.c=.o)
-EXECUTABLE=rHAT-mapper
+EXECUTABLE=rHAT-aligner
 HCPPSOURCES=whash.cpp genhash.cpp formh.cpp
 HOBJECTS=$(HCPPSOURCES:.cpp=.o) $(CSOURCES:.c=.o)
 HEXECUTABLE=rHAT-indexer

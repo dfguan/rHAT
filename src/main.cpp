@@ -29,15 +29,14 @@ const std::string getCurrentDateTime() {
 
 int main(int argc, char *argv[])
 {
-
-#ifdef PRINT_LOG
-	fprintf(stderr,"%s [rHAT-mapper] started\n",getCurrentDateTime().c_str());
-#endif
-	
 	opts *opt = new opts;
 	Form fm(opt);
 	if (fm.opt_parse(argc,argv,opt)!=1)
 		exit(1);
+	
+#ifdef PRINT_LOG
+	fprintf(stderr,"%s [rHAT-aligner] started\n",getCurrentDateTime().c_str());
+#endif
 	
 	Aligner alig(opt);
 	alig.Runtask();	
@@ -45,7 +44,7 @@ int main(int argc, char *argv[])
 	if ( NULL != opt ) delete opt;
 
 #ifdef PRINT_LOG
-	fprintf(stderr,"%s [rHAT-mapper] ended\n",getCurrentDateTime().c_str());
+	fprintf(stderr,"%s [rHAT-aligner] ended\n",getCurrentDateTime().c_str());
 	//fclose(stderr);
 #endif	
 	return 0;

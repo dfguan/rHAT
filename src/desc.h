@@ -1,3 +1,3 @@
-#define PROGRAM	"rHAT-mapper"
-#define PACKAGE_VERSION "v.15.01"
-#define CONTACT "Derek Guan <derekguanhit@gmail.com>"
+#define PROGRAM	"rHAT-aligner"
+#define PACKAGE_VERSION "0.1.0"
+#define CONTACT "<bo.liu@hit.edu.cn>"

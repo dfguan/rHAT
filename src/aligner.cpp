@@ -438,6 +438,14 @@ int Aligner::conductAlign(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhas
 	}
 	//output sam records
 	if (sign == 1) {
+
+		char *probQual = "*";
+		char *usedqual;
+		if (trunk->qual.s == NULL)
+			usedqual = probQual;
+		else
+			usedqual = trunk->qual.s;
+
 		if (countSam >= 2) {
 			int orders[countSam];
 			for(int i=0;i<countSam;++i) orders[i] = i;
@@ -455,14 +463,14 @@ int Aligner::conductAlign(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhas
 			cout<<trunk->name.s<<"\t"<<sams[orders[0]].flag<<"\t"<<ChrName[sams[orders[0]].chrIndex]<<"\t"<<sams[orders[0]].pos<<"\t"<<quality<<"\t"<<sams[orders[0]].headCigar<<sams[orders[0]].bodyCigar<<sams[orders[0]].tailCigar<<"\t"<<"*"<<"\t"<<"0"<<"\t"
 			<<"0"<<"\t";
 			cout<<_usedread<<"\t";
-			cout<<trunk->qual.s<<"\t"<<"AS:i:"<<sams[orders[0]].score<<endl;
+			cout<<usedqual<<"\t"<<"AS:i:"<<sams[orders[0]].score<<endl;
 
 			for (int i=1;i<countSam;++i) {
 				
 				cout<<trunk->name.s<<"\t"<<sams[orders[i]].flag + 256<<"\t"<<ChrName[sams[orders[i]].chrIndex]<<"\t"<<sams[orders[i]].pos<<"\t"<<"0"<<"\t"<<sams[orders[i]].headCigar<<sams[orders[i]].bodyCigar<<sams[orders[i]].tailCigar<<"\t"<<"*"<<"\t"<<"0"<<"\t"
 				<<"0"<<"\t";
 				cout<<_usedread<<"\t";
-				cout<<trunk->qual.s<<"\t"<<"AS:i:"<<sams[orders[i]].score<<endl;
+				cout<<usedqual<<"\t"<<"AS:i:"<<sams[orders[i]].score<<endl;
 			}
 
 
@@ -474,7 +482,7 @@ int Aligner::conductAlign(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhas
 			cout<<trunk->name.s<<"\t"<<sams[0].flag<<"\t"<<ChrName[sams[0].chrIndex]<<"\t"<<sams[0].pos<<"\t"<<"60"<<"\t"<<sams[0].headCigar<<sams[0].bodyCigar<<sams[0].tailCigar<<"\t"<<"*"<<"\t"<<"0"<<"\t"
 			<<"0"<<"\t";
 			cout<<_usedread<<"\t";
-			cout<<trunk->qual.s<<"\t"<<"AS:i:"<<sams[0].score<<endl;
+			cout<<usedqual<<"\t"<<"AS:i:"<<sams[0].score<<endl;
 		}
 	}
 
@@ -805,6 +813,8 @@ int Aligner::produceSAM(int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *l
 //output first:
 	int rclip,lclip;
 	char *usedread;
+	char *usedqual;
+	char *probQual = "*";
 	if (svsams[bestInd].flag) {
 		rclip = len[bestbulk+extend[bestInd]];
 		lclip = trunk->seq.l - len[bestbulk+1];
@@ -815,6 +825,12 @@ int Aligner::produceSAM(int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *l
 		usedread = trunk->seq.s;
 	}
 
+	if (trunk->qual.s == NULL)
+		usedqual = probQual;
+	else
+		usedqual = trunk->qual.s;
+
+
 	cout<<trunk->name.s<<"\t"<<svsams[bestInd].flag<<"\t"<<ChrName[svsams[bestInd].chrIndex]<<"\t"<<svsams[bestInd].pos<<"\t"<<quality<<"\t";
 
 	if (lclip)  	cout<<lclip<<"S";
@@ -822,7 +838,7 @@ int Aligner::produceSAM(int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *l
 	if (rclip) 	cout<<rclip<<"S";
 	cout<<"\t"<<"*"<<"\t"<<"0"<<"\t"<<"0"<<"\t";
 	
-	cout<<trunk->qual.s<<"\t"<<"AS:i:"<<svsams[bestInd].score<<endl;
+	cout<<usedqual<<"\t"<<"AS:i:"<<svsams[bestInd].score<<endl;
 
 	if (countOutput!=1) {
 		for (int i=0;i<countbulks;++i) {
@@ -845,7 +861,7 @@ int Aligner::produceSAM(int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *l
 					if (rclip)	cout<<rclip<<"S";
 					cout<<"\t"<<"*"<<"\t"<<"0"<<"\t"<<"0"<<"\t";
 					cout<<usedread<<"\t";
-					cout<<trunk->qual.s<<"\t"<<"AS:i:"<<svsams[j].score<<endl;
+					cout<<usedqual<<"\t"<<"AS:i:"<<svsams[j].score<<endl;
 				}
 			}
 		}	
@@ -1023,7 +1039,7 @@ void Aligner::Runtask()
 	//output header
 	cout<<"@HD\tVN:"<<"v.15.01"<<endl;
 	for (int i=1;i<countChr;++i) {cout<<"@SQ\tSN:"<<ChrName[i]<<"\tLN:"<<Start_pos[i]-Start_pos[i-1]<<endl;}
-	cout<<"@PG\tID:rHAT-mapper\tVN:v.15.01\tCL:";
+	cout<<"@PG\tID:rHAT-aligner\tVN:v.15.01\tCL:";
 	for (int i=0;i<opt->argc;++i) {cout<<opt->argv[i]<<" ";}
 	cout<<endl;	
 

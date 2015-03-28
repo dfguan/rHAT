@@ -21,12 +21,14 @@ const std::string getCurrentDateTime() {
 
 int main(int argc, char *argv[])
 {
-	fprintf(stderr,"%s rHAT-indexer started\n",getCurrentDateTime().c_str());
+	
 	opts *opt = new opts;
 	Form fm(opt);
 	if (fm.opt_parse(argc,argv,opt)!=1)
 		exit(1);
 
+	fprintf(stderr,"%s rHAT-indexer started\n",getCurrentDateTime().c_str());
+	
 	uint32_t len_genome = 0;
 	
 	read_file rdfl;
