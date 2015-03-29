@@ -1037,9 +1037,9 @@ void Aligner::Runtask()
 	} 
 
 	//output header
-	cout<<"@HD\tVN:"<<"v.15.01"<<endl;
+	cout<<"@HD\tVN:"<<PACKAGE_VERSION<<endl;
 	for (int i=1;i<countChr;++i) {cout<<"@SQ\tSN:"<<ChrName[i]<<"\tLN:"<<Start_pos[i]-Start_pos[i-1]<<endl;}
-	cout<<"@PG\tID:rHAT-aligner\tVN:v.15.01\tCL:";
+	cout<<"@PG\tID:"<<PACKAGE_NAME<<"\tVN:v.15.01\tCL:";
 	for (int i=0;i<opt->argc;++i) {cout<<opt->argv[i]<<" ";}
 	cout<<endl;	
 

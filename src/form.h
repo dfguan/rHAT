@@ -1,4 +1,5 @@
 
+#include "desc.h"
 #include <stdint.h>
 
 #define PATH_LEN 1024
@@ -19,7 +20,6 @@ typedef struct options {
 	int 		argc;
 	char 		**argv;
 
-	//ksw paramters
 	int 		gapopen;
 	int			gapextend;
 	int			match;
@@ -35,5 +35,4 @@ public:
 	Form(opts *opt);
 	int usage();
 	int opt_parse(int argc, char *argv[], opts* opt);
-	//~Form();
 };
