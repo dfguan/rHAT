@@ -600,38 +600,6 @@ int  Aligner::applyNonSV(kseq_t *trunk,  RHashtable *rhashtab, RHashtable *rrhas
 	return sign;
 }
 
-// void Aligner::applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab)
-// {
-// 	//split into several pieces
-
-// 	std::priority_queue<bkt2> 	cansHeap;
-// 	uint32_t pNumber = trunk->seq.l/LEN_BASES;
-// 	uint32_t leftLen = LEN_BASES + trunk->seq.l - pNumber*LEN_BASES;
-// 	char *useread = trunk->seq.s;
-// 	bool isRC = false;
-// 	// produce the 
-// 	for (uint32_t i = 0; i<pNumber-1;++i) {
-// 		for (int j=0;j<=1;++j) {
-// 			proCans(useread+i*LEN_BASES,isRC,cansHeap);
-// 			useread = RCRead;
-// 			isRC = true;
-// 		}	
-// 		conductAlign(trunk,trunk->seq.s+i*LEN_BASES, RCRead + i*LEN_BASES, LEN_BASES, rhashtab,rhashtab,cansHeap,i*LEN_BASES,trunk->seq.l-(i+1)*LEN_BASES);
-
-// 	}
-// 	//deal with the last piece	
-// 	uint32_t offset = (leftLen - LEN_BASES)>>1;
-// 	for (int j=0;j<=1;++j) {
-// 		proCans(useread+(pNumber-1)*LEN_BASES + offset,isRC,cansHeap);
-// 		useread = RCRead;
-// 		isRC = true;
-// 	}
-	
-// 	conductAlign(trunk,trunk->seq.s+(pNumber-1)*LEN_BASES,RCRead+(pNumber-1)*LEN_BASES,leftLen,rhashtab,rrhashtab,cansHeap,(pNumber-1)*LEN_BASES,0);
-
-// }
-
-//
 int Aligner::Qualified(Sam_Rec *key,Sam_Rec *set, int start, int end, bool *issubstr)
 {
 	for (int i=start;i<end;++i) {
@@ -942,83 +910,6 @@ void Aligner::applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab
 	produceSAM(pNumber, bkt_index, trunk, len);
 }
 
-// void Aligner::applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab)
-// {
-// 	//split into several pieces
-// 	//
-// 	// first analysis reverse or not
-// 	std::priority_queue<bkt2> 	cansHeap;
-// 	uint32_t offset = ((trunk->seq.l - LEN_BASES)>>1);
-// 	char 	*useread;
-// 	bool 	isRC;
-// 	int  	movement ;
-// 	useread = trunk->seq.s;
-// 	isRC = false;
-// 	for (int j=0;j<=1;++j) {
-// 		proCans(useread+offset,isRC,cansHeap);
-// 		useread = RCRead;
-// 		isRC = true;
-// 	}
-// 	if (cansHeap.top().isrc) {
-// 		useread = RCRead;
-// 		isRC = true;
-// 	} else {
-// 		useread = trunk->seq.s;
-// 		isRC = false;
-// 	}
-// 	while (!cansHeap.empty()) cansHeap.pop();
-
-	
-// 	uint32_t pNumber = trunk->seq.l/LEN_BASES;
-// 	uint32_t leftLen = LEN_BASES + trunk->seq.l - pNumber*LEN_BASES;
-// 	//if (leftLen) ++pNumber;
-// 	// produce the
-// 	int bkt_index[pNumber+1];
-// 	uint32_t len[pNumber+1];
-// 	bkt_index[0] = 0; 
-// 	len[0] = 0;
-
-// 	for (int i=0;i<pNumber -1;++i) len[i+1] = len[i] + LEN_BASES;
-// 	len[pNumber] = len[pNumber-1] + leftLen;
-	
-	
-// 	//
-// 	for (uint32_t i = 0; i < pNumber - 1;++i) {
-// 		movement = i*LEN_BASES;
-// 		proCans(useread+movement,isRC,cansHeap);
-// 		int samCounter = conductAlign(trunk,trunk->seq.s+i*LEN_BASES, RCRead + movement, LEN_BASES, rhashtab,rrhashtab,cansHeap,svsams+bkt_index[i]);
-// 		//update svsams
-// 		bkt_index[i+1] = bkt_index[i] + samCounter;
-// 		for (int k=bkt_index[i];k<bkt_index[i+1];++k) {
-// 			svsams[k].read_start += len[i];
-// 			svsams[k].read_end += len[i];	
-// 		}
-// 	}
-	
-	
-// 	//deal with the last piece	
-// 	//statistic first bucket hit times:
-// 	//initiate hit_times all to zero
-// 	offset = ((leftLen - LEN_BASES)>>1);
-
-// 	movement = (pNumber-1)*LEN_BASES;
-
-// 	proCans(useread+ movement + offset,isRC,cansHeap);
-		
-// 	//len[pNumber] = len[pNumber - 1] + leftLen;
-// 	bkt_index[pNumber] = bkt_index[pNumber-1] + conductAlign(trunk,trunk->seq.s+(pNumber-1)*LEN_BASES,RCRead+movement,leftLen,rhashtab,rrhashtab,cansHeap,svsams+bkt_index[pNumber-1]);
-	
-
-// 	for (int k=bkt_index[pNumber-1];k<bkt_index[pNumber];++k) {
-// 		//if (svsams[k].flag == 0) {
-// 		svsams[k].read_start += len[pNumber-1];
-// 		svsams[k].read_end += len[pNumber-1];
-		
-// 	}
-// 	if (bkt_index[pNumber] <= 0) return ;
-// 	produceSAM(pNumber, bkt_index, trunk, len);
-	
-// }
 void Aligner::Runtask()
 {
 	//read datas

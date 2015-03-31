@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	
 #ifdef PRINT_LOG
-	fprintf(stderr,"%s [rHAT-aligner] started\n",getCurrentDateTime().c_str());
+	fprintf(stderr,"%s [%s] started\n",getCurrentDateTime().c_str(), PACKAGE_NAME);
 #endif
 	
 	Aligner alig(opt);
@@ -44,8 +44,7 @@ int main(int argc, char *argv[])
 	if ( NULL != opt ) delete opt;
 
 #ifdef PRINT_LOG
-	fprintf(stderr,"%s [rHAT-aligner] ended\n",getCurrentDateTime().c_str());
-	//fclose(stderr);
+	fprintf(stderr,"%s [%s] ended\n",getCurrentDateTime().c_str(), PACKAGE_NAME);
 #endif	
 	return 0;
 

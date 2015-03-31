@@ -35,27 +35,25 @@ Form::Form(opts *opt)
     opt->canN = 5;
     opt->hit_limit = 1000;
     //opt->usecigar = true;
-    opt->rh_seed_len = RH_SEED_LEN;
-    opt->waitingLen = WAITING_LEN;
+
+    opt->rh_seed_len = RH_SEED_LEN; //might be useless
+    opt->waitingLen = WAITING_LEN; // might be useless
     opt->thread = 1000;
     opt->len_limit = 100000;
     opt->gapopen = 2;
     opt->gapextend = 1;
     opt->mismatch = 5;
     opt->match = 1;
-
-    //opt->autoload = false;
-
 }
 
 int Form::usage()
 {
 
     fprintf(stderr, "\n"); 
-    fprintf(stderr, "Program:   rHAT-aligner\n"); 
+    fprintf(stderr, "Program:   %s\n", PACKAGE_NAME); 
     fprintf(stderr, "Version:   %s\n", PACKAGE_VERSION); 
     fprintf(stderr, "Contact:   %s\n\n", CONTACT); 
-    fprintf(stderr, "Usage:     rHAT-aligner [Options] <HashIndexDir> <ReadFile> <Reference>\n\n"); 
+    fprintf(stderr, "Usage:     %s [Options] <HashIndexDir> <ReadFile> <Reference>\n\n", PACKAGE_NAME); 
     fprintf(stderr, "<HashIndexDir>         The directory storing RHT index\n");
     fprintf(stderr, "<ReadFile>             Reads file, in FASTQ/FASTA format\n");
     fprintf(stderr, "<Reference>            Sequence of reference genome, in FASTA format\n\n");
