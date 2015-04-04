@@ -391,9 +391,11 @@ int Aligner::conductAlign(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhas
 		cansHeap.pop();
 
 	}
-	
+	bool splitup = false;
+
 	if (1 != sign) {
-		//recuculate
+		splitup = true;
+		//recuculate extending waiting length
 		for (int i=0;i<usedArray;++i) {
 			Graphic 		gra;
 			seq_num_temp = preserved[i].seq_num;
@@ -451,14 +453,19 @@ int Aligner::conductAlign(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhas
 			for(int i=0;i<countSam;++i) orders[i] = i;
 			qsort_r(orders,countSam,sizeof(int),compare_sam,sams);
 			int quality;
-			if (sams[orders[0]].score > 0) {
-				quality = (int)(250.0 * 0.25 * (double)(sams[orders[0]].score - sams[orders[1]].score)/(double)(sams[orders[0]].score));
-				if (quality>=60) quality = 60;
-			} else quality = 0;
-			if (sams[orders[0]].flag)
-				 _usedread = RCRead;
-			else
-				_usedread = trunk->seq.s;
+			if (splitup) {
+				quality = 0;
+			} else {
+				if (sams[orders[0]].score > 0) {
+					quality = (int)(250.0 * 0.25 * (double)(sams[orders[0]].score - sams[orders[1]].score)/(double)(sams[orders[0]].score));
+					if (quality>=60) quality = 60;
+				} else quality = 0;
+				if (sams[orders[0]].flag)
+					 _usedread = RCRead;
+				else
+					_usedread = trunk->seq.s;
+			}
+			
 
 			cout<<trunk->name.s<<"\t"<<sams[orders[0]].flag<<"\t"<<ChrName[sams[orders[0]].chrIndex]<<"\t"<<sams[orders[0]].pos<<"\t"<<quality<<"\t"<<sams[orders[0]].headCigar<<sams[orders[0]].bodyCigar<<sams[orders[0]].tailCigar<<"\t"<<"*"<<"\t"<<"0"<<"\t"
 			<<"0"<<"\t";
@@ -770,14 +777,7 @@ int Aligner::produceSAM(int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *l
 			}
 		}
 	}
-	if (countOutput == 1) quality = 60;
-	else  {
-			if (bestscore <= 0) quality = 0;
-			else {
-				int quality = (int)(250.0 * 0.25 * (double)(bestscore - secbestscore)/(double)(bestscore));
-				if (quality>=60) quality = 60;
-			}
-	}
+	quality = 0;
 //output first:
 	int rclip,lclip;
 	char *usedread;
@@ -808,7 +808,7 @@ int Aligner::produceSAM(int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *l
 	
 	cout<<usedqual<<"\t"<<"AS:i:"<<svsams[bestInd].score<<endl;
 
-	if (countOutput!=1) {
+	if (countOutput!=1) {//
 		for (int i=0;i<countbulks;++i) {
 			for (int j=sam4bulk[i];j<sam4bulk[i+1];++j) {
 				if (!besubstr[j] && j != bestInd) {
