@@ -43,7 +43,7 @@ The makefile is attached. Use the make command for generating the executable fil
 rHAT-indexer [-k kmerSize] <HashIndexDir> <Reference>
 Index reference in RHT format
 rHAT-aligner [-w windowsHits] [-m candidates] [-k kmerSize] [-a match] [-b mismatch] [-q gapOpen] [-r gapExtension] <HashIndexDir> <ReadFile> <Reference>
-Align reads to its primitive location in Reference
+Align read to its primitive location in Reference
 ```
 
 ---
