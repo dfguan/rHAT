@@ -1,6 +1,9 @@
 ###Introduction
-rHAT is a seed-and-extension-based noisy long read alignment tool. It is suitable for aligning 3rd generation sequencing reads which are in large read length with relatively high error rate, especially Pacbio¡¯s Single Molecule Read-time (SMRT) sequencing reads. 
+
+rHAT is a seed-and-extension-based noisy long read alignment tool. It is suitable for aligning 3rd generation sequencing reads which are in large read length with relatively high error rate, especially Pacbio's Single Molecule Read-time (SMRT) sequencing reads. 
+
 rHAT indexes the genome with a hash table-based index (regional hash table, RHT) which describes the short tokens occurring in local windows of reference genome. With this index, rHAT adopts a specifically designed seed-and-extension strategy. In the seeding phase, the occurrences of short token matches between partial read and local genomic windows are efficiently calculated to find highly possible sites as candidates for extension. In the extension phase, a sparse dynamic programming-based heuristic approach is adopted for reducing the cost of the alignment between the long noisy read and the local reference sequence. 
+
 rHAT has outstanding throughput on aligning SMRT reads from various prokaryote and eukaryote genomes. Benchmarking on a series of model organism genomes, e.g., E. coli, S. cerevisiae, D. melanogaster, A. thaliana, H. sapiens, etc., demonstrated that it can be two to several times as fast as currently state-of-the-art aligners. Meanwhile, rHAT can sensitively and consecutively aligns the read, i.e., most of the noisy long reads can be end-to-end aligned, and all the bases can be covered.
 rHAT is open source and free for non-commercial use.
 
@@ -9,6 +12,7 @@ rHAT is mainly designed by Bo Liu and developed by Dengfeng Guan in Center for B
 ---
 
 ###Memory requirement
+
 The memory usage of rHAT can fit the configurations of most modern servers and workstations. Its peak memory footprint depends on the length of reference genome and the k-mer size parameter setting. We investigated its memory usage for aligning two real SMRT datasets, respectively sequenced from H. sapiens and D. melanogaster genomes, on a server with Intel E5640 CPU at 2.67 GHz, 24 Gigabytes RAM running Linux Ubuntu 10.04. The read were respectively aligned to GRCh37/hg19 and DM5 reference genomes, and the peak memory footprint is as following.
 
 H. sapiens dataset:
@@ -25,7 +29,9 @@ k-mer size=15 (max k-mer size), 4.76 Gigabytes
 ---
 
 ###Installation
+
 Current version of rHAT needs to be run on Linux operating system.
+
 The source code is written in C++, and can be directly download from: https://github.com/Derek-Guan/rHAT
 
 The makefile is attached. Use the make command for generating the executable file.
@@ -75,4 +81,5 @@ rHAT: Fast aligning noisy long read with regional hashing. Under Review.
 ---
 
 ###Contact
+
 For advising, bug reporting and requiring help, please contact ydwang@hit.edu.cn
