@@ -97,6 +97,14 @@ rHAT-aligner Genome_Index_Dir Fastq_File Genome_File > Sam_File
 ```
 ---
 
+###Simulation benchmarking:
+
+We simulated a series of datasets from various genomes, i.e., Escherichia coli (complete genome of the 536 strain), Saccharomyces cerevisiae (build sacCer3), Drosophila melanogaster (build DM3), Arabidopsis thaliana (build TAIR10) and Homo sapiens (build GCRh37/hg19), through PBSim (Ono et. al., 2013, Verison 1.0.3). The read length is analogous to Pacbio P5/C3 release. The average read length is 8000 basepairs. These datasets helped us to evaluate the performance of rHAT.
+The datasets have been uploaded to Google Drive, and can be downloaded through the following link:
+https://drive.google.com/folderview?id=0Bwibkj8plEJrZFlNOG1rd3hBRWM&usp=sharing
+
+---
+
 ###Reference
 
 rHAT: Fast aligning noisy long read with regional hashing. Under Review.
