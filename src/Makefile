@@ -2,33 +2,30 @@ CC=g++
 CFLAGS=-O3 -c -Wall
 DFLAGS=-g -Wall
 LDFLAGS= -lz -lm
-ECPPSOURCES=main.cpp aligner.cpp graph.cpp  readfl.cpp hash.cpp form.cpp 
-CSOURCES=ksw.c 
-EOBJECTS=$(ECPPSOURCES:.cpp=.o) $(CSOURCES:.c=.o)
-EXECUTABLE=rHAT-aligner
-HCPPSOURCES=whash.cpp genhash.cpp formh.cpp
-HOBJECTS=$(HCPPSOURCES:.cpp=.o) $(CSOURCES:.c=.o)
-HEXECUTABLE=rHAT-indexer
 
-all: $(HCPPSOURCES) $(ECPPSOURCES) $(CSOURCES) $(EXECUTABLE) $(HEXECUTABLE)
+KSWSOURCE=ksw.c 
+ALGNSOURCES=main.cpp aligner.cpp graph.cpp  readfl.cpp hash.cpp form.cpp 
+INDSOURCES=whash.cpp genhash.cpp formh.cpp
+
+INDOBJECTS=$(INDSOURCES:.cpp=.o) $(KSWSOURCE:.c=.o)
+ALGNOBJECTS=$(ALGNSOURCES:.cpp=.o) $(KSWSOURCE:.c=.o)
+
+INDEXER=rHAT-indexer
+ALIGNER=rHAT-aligner
+
+all: $(INDSOURCES) $(ALGNSOURCES) $(KSWSOURCE) $(ALIGNER) $(INDEXER)
 	
-$(EXECUTABLE): $(EOBJECTS)
-	$(CC)  $(EOBJECTS) -o $@ $(LDFLAGS)
+$(ALIGNER): $(ALGNOBJECTS)
+	$(CC)  $(ALGNOBJECTS) -o $@ $(LDFLAGS)
 
-$(HEXECUTABLE): $(HOBJECTS)
-	$(CC)  $(HOBJECTS) readfl.o -o $@ $(LDFLAGS)
+$(INDEXER): $(INDOBJECTS)
+	$(CC)  $(INDOBJECTS) readfl.o -o $@ $(LDFLAGS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
 .c.o:
 	$(CC) $(CFLAGS) $< -o $@
-debugE:
-	$(CC) $(DFLAGS) $(ECPPSOURCES) $(CSOURCES) $(LDFLAGS)
-debugH:
-	$(CC) $(DFLAGS) $(HCPPSOURCES) $(CSOURCES) readfl.cpp $(LDFLAGS)
-printT:
-	$(CC) $(DFLAGS) -pg $(ECPPSOURCES) $(CSOURCES) $(LDFLAGS)
 clean:
-	rm -rf *.o $(EXECUTABLE) $(HEXECUTABLE) a.out
+	rm -rf *.o $(ALIGNER) $(INDEXER) a.out
 
  

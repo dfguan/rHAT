@@ -42,8 +42,8 @@ int Form::usage()
     fprintf(stderr, "<HashIndexDir>         The directory storing RHT index\n");
     fprintf(stderr, "<Reference>            Sequence of reference genome, in FASTA format\n\n");
     
-    fprintf(stderr, "Options:           -k, --kmer-size        <int>           the size of the k-mers extracted from reference genome for indexing [13]\n"); 
-    fprintf(stderr, "                   -h, --help                             help\n");
+    fprintf(stderr, "Options:   -k, --kmer-size        <int>           the size of the k-mers extracted from reference genome for indexing [13]\n"); 
+    fprintf(stderr, "           -h, --help                             help\n");
     //fprintf(stderr, "           -t, --threads       <int>    thread\n"); 
     //fprintf(stderr, "           -n, --num           <int>    candidate number [5]\n"); 
     //fprintf(stderr, "           -m, --hit_max       <int>    max hit times of a seed [1000]\n"); 
