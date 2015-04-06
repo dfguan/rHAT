@@ -114,7 +114,7 @@ https://drive.google.com/folderview?id=0Bwibkj8plEJrZFlNOG1rd3hBRWM&usp=sharing
 
 ###Reference
 
-rHAT: Fast aligning noisy long read with regional hashing. Under Review.
+rHAT: Fast aligning noisy long read with regional hashing. *Under Review*.
 
 ---
 
