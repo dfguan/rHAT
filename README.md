@@ -20,6 +20,7 @@ H. sapiens dataset:
 k-mer size=13 (default setting), 13.70 Gigabytes 
 k-mer size=15 (max k-mer size),  17.48 Gigabytes 
 ```
+
 D. melanogaster dataset:
 ```
 k-mer size=13 (default setting), 1.01  Gigabytes 
@@ -41,9 +42,12 @@ The makefile is attached. Use the make command for generating the executable fil
 ###Synopsis
 ```
 rHAT-indexer [-k kmerSize] <HashIndexDir> <Reference>
+
 Index reference in RHT format
+
 rHAT-aligner [-w windowsHits] [-m candidates] [-k kmerSize] [-a match] [-b mismatch]
 [-q gapOpen] [-r gapExtension] <HashIndexDir> <ReadFile> <Reference>
+
 Align read to its primitive location in Reference
 ```
 
@@ -56,26 +60,26 @@ rHAT-indexer:
 
 rHAT-aligner:
 -w, --window-hits	INT		The max allowed number of windows hit by a k-mer, if a k-mer 
-                            hits more than ¨Cw genomic windows, rHAT would consider the k-mer 
+                            hits more than -w genomic windows, rHAT would consider the k-mer 
                             is too repetitive, and discard the k-mer. (default = 1000)
 
 -m, --candidates	INT		The number of candidates for extension, this is one of the 
-                            major heuristic parameters in rHAT. Setting ¨Cm high will let 
+                            major heuristic parameters in rHAT. Setting -m high will let 
                             rHAT aligns the read to many local sites, which could affect 
-                            the throughput, while setting ¨Cm low may make too few candidates
+                            the throughput, while setting -m low may make too few candidates
                             which could affect the sensitivity and accuracy of the alignment. 
                             Based on the benchmarking on a series of simulated and real datasets 
-                            from various genomes, we suggest that setting the ¨Cm parameter to 
+                            from various genomes, we suggest that setting the -m parameter to 
                             5-10 could reconcile the effectiveness and efficiency in most cases. (default = 5)
 
 -k, --kmer-size		INT		The size of the k-mer extracted from the read for generating short 
-                            token matches, note that it needs to be same to the setting of ¨Ck parameter
-                            in rHAT-indexer. It is not allowed to set ¨Ck parameter >15 in current version of rHAT,
+                            token matches, note that it needs to be same to the setting of -k parameter
+                            in rHAT-indexer. It is not allowed to set -k parameter >15 in current version of rHAT,
                             due to the large usage of RAM. It is also worth noting that, for a large 
-                            and repetitive reference genome (e.g., mammalian genomes), setting ¨Ck too small,
+                            and repetitive reference genome (e.g., mammalian genomes), setting -k too small,
                             e.g., <11, may affect the alignment, since some k-mers may hit too many genomic 
                             windows and ignored by rHAT according to the limit on the windows hits, 
-                            i.e., the ¨Cw setting. 
+                            i.e., the -w setting. 
 
 -a, --match		    INT		score of match for the alignments in extension phase [1]
 
@@ -91,8 +95,11 @@ rHAT-aligner:
 ###Quick start
 ```
 Genome indexing:
+
 rHAT-indexer Genome_Index_Dir Genome_File
+
 Read alignment:
+
 rHAT-aligner Genome_Index_Dir Fastq_File Genome_File > Sam_File
 ```
 ---
