@@ -26,7 +26,7 @@ k-mer size=15 (max k-mer size), 4.76 Gigabytes
 
 ###Installation:
 Current version of rHAT needs to be run on Linux operating system.
-The source code is written in C++, and can be directly download from: `https://github.com/Derek-Guan/rHAT`
+The source code is written in C++, and can be directly download from: https://github.com/Derek-Guan/rHAT
 
 The makefile is attached. Use the make command for generating the executable file.
 
@@ -75,4 +75,4 @@ rHAT: Fast aligning noisy long read with regional hashing. Under Review.
 ---
 
 ###Contact:
-For advising, bug reporting and requiring help, please contact `ydwang@hit.edu.cn`
+For advising, bug reporting and requiring help, please contact ydwang@hit.edu.cn
