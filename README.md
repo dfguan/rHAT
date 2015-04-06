@@ -24,7 +24,7 @@ k-mer size=15 (max k-mer size), 4.76 Gigabytes
 
 ---
 
-###Installation:
+###Installation
 Current version of rHAT needs to be run on Linux operating system.
 The source code is written in C++, and can be directly download from: https://github.com/Derek-Guan/rHAT
 
@@ -32,7 +32,7 @@ The makefile is attached. Use the make command for generating the executable fil
 
 ---
 
-###Synopsis:
+###Synopsis
 ```
 rHAT-indexer [-k kmerSize] <HashIndexDir> <Reference>
 Index reference in RHT format
@@ -42,7 +42,7 @@ Align reads to its primitive location in Reference
 
 ---
 
-###Parameters (could be updated in the future for adding new functions):
+###Parameters (could be updated in the future for adding new functions)
 ```
 rHAT-indexer:
 -k, --kmer-size		INT		The size of the k-mers extracted from the reference genome for indexing[13].
@@ -59,7 +59,7 @@ rHAT-aligner:
 
 ------------------------------------------------------------------------------------------------
 
-###Quick start:
+###Quick start
 ```
 Genome indexing:
 rHAT-indexer Genome_Index_Dir Genome_File
@@ -68,11 +68,11 @@ rHAT-aligner Genome_Index_Dir Fastq_File Genome_File > Sam_File
 ```
 ---
 
-###Reference:
+###Reference
 
 rHAT: Fast aligning noisy long read with regional hashing. Under Review.
 
 ---
 
-###Contact:
+###Contact
 For advising, bug reporting and requiring help, please contact ydwang@hit.edu.cn
