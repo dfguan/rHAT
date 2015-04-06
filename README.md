@@ -18,12 +18,12 @@ The memory usage of rHAT can fit the configurations of most modern servers and w
 H. sapiens dataset:
 ```
 k-mer size=13 (default setting), 13.70 Gigabytes 
-k-mer size=15 (max k-mer size), 17.48 Gigabytes 
+k-mer size=15 (max k-mer size),  17.48 Gigabytes 
 ```
 D. melanogaster dataset:
 ```
 k-mer size=13 (default setting), 1.01  Gigabytes 
-k-mer size=15 (max k-mer size), 4.76 Gigabytes 
+k-mer size=15 (max k-mer size),  4.76 Gigabytes 
 ```
 
 ---
@@ -42,7 +42,8 @@ The makefile is attached. Use the make command for generating the executable fil
 ```
 rHAT-indexer [-k kmerSize] <HashIndexDir> <Reference>
 Index reference in RHT format
-rHAT-aligner [-w windowsHits] [-m candidates] [-k kmerSize] [-a match] [-b mismatch] [-q gapOpen] [-r gapExtension] <HashIndexDir> <ReadFile> <Reference>
+rHAT-aligner [-w windowsHits] [-m candidates] [-k kmerSize] [-a match] [-b mismatch]
+[-q gapOpen] [-r gapExtension] <HashIndexDir> <ReadFile> <Reference>
 Align read to its primitive location in Reference
 ```
 
@@ -54,13 +55,20 @@ rHAT-indexer:
 -k, --kmer-size		INT		The size of the k-mers extracted from the reference genome for indexing[13].
 
 rHAT-aligner:
--w, --window-hits	INT		The max allowed number of windows hit by a k-mer, if a k-mer hits more than ¨Cw genomic windows, rHAT 
-                            would consider the k-mer is too repetitive, and discard the k-mer. (default = 1000)
--m, --candidates	INT		The number of candidates for extension, this is one of the major heuristic parameters in rHAT. Setting
-                            ¨Cm high will let rHAT aligns the read to many local sites, which could affect the throughput, while setting ¨Cm low may make too few candidates which could affect the sensitivity and accuracy of the alignment. Based on the benchmarking on a series of simulated and real datasets from various genomes, we suggest that setting the ¨Cm parameter to 5-10 could reconcile the effectiveness and efficiency in most cases. (default = 5)
+-w, --window-hits	INT		The max allowed number of windows hit by a k-mer, if a k-mer hits more than ¨Cw genomic windows, 
+                                        rHAT would consider the k-mer is too repetitive, and discard the k-mer. (default = 1000)
+-m, --candidates	INT		The number of candidates for extension, this is one of the major heuristic parameters in rHAT. 
+                                        Setting ¨Cm high will let rHAT aligns the read to many local sites, which could affect the throughput, 
+                                        while setting ¨Cm low may make too few candidates which could affect the sensitivity and accuracy of the alignment. 
+                                        Based on the benchmarking on a series of simulated and real datasets from various genomes, we suggest that setting 
+                                        the ¨Cm parameter to 5-10 could reconcile the effectiveness and efficiency in most cases. (default = 5)
 -k, --kmer-size		INT		The size of the k-mer extracted from the read for generating short token matches, note that it needs 
-                            to be same to the setting of ¨Ck parameter in rHAT-indexer. It is not allowed to set ¨Ck parameter >15 in current version of rHAT, due to the large usage of RAM. It is also worth noting that, for a large and repetitive reference genome (e.g., mammalian genomes), setting ¨Ck too small, e.g., <11, may affect the alignment, since some k-mers may hit too many genomic windows and ignored by rHAT according to the limit on the windows hits, i.e., the ¨Cw setting. 
--a, --match			INT		score of match for the alignments in extension phase [1]
+                                        to be same to the setting of ¨Ck parameter in rHAT-indexer. It is not allowed to set ¨Ck parameter >15
+                                        in current version of rHAT, due to the large usage of RAM. It is also worth noting that, for a large 
+                                        and repetitive reference genome (e.g., mammalian genomes), setting ¨Ck too small, e.g., <11, may affect 
+                                        the alignment, since some k-mers may hit too many genomic windows and ignored by rHAT according to the
+                                        limit on the windows hits, i.e., the ¨Cw setting. 
+-a, --match		INT		score of match for the alignments in extension phase [1]
 -b, --mismatch		INT		mismatch penalty for the alignments in extension phase [5]
 -q, --gap-open		INT		gap open penalty for the alignments in extension phase [2]
 -r, --gap-extension	INT		gap extension penalty for the alignments in extension phase [1]
