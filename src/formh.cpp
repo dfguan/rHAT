@@ -75,7 +75,7 @@ int Form::opt_parse(int argc, char *argv[], opts* opt)
     
     }
     if(optind + 2 != argc){
-        fprintf(stderr, "[opt_parse]: index directory, read file and reference file can't be omited!\n"); 
+        fprintf(stderr, "[opt_parse]: index directory and reference file can't be omited!\n"); 
         return 0; 
     }
 
