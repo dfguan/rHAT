@@ -78,8 +78,9 @@
 #ifndef KSTRING_T
 #define KSTRING_T kstring_t
 typedef struct __kstring_t {
-	size_t l, m;
+	size_t l, m, lr;
 	char *s;
+	char *rs;
 } kstring_t;
 #endif
 
@@ -116,7 +117,8 @@ typedef struct __kstring_t {
 			if (str->m - str->l < (size_t)i - ks->begin + 1) {			\
 				str->m = str->l + (i - ks->begin) + 1;					\
 				kroundup32(str->m);										\
-				str->s = (char*)realloc(str->s, str->m);				\
+				str->s = (char*)realloc(str->s, str->m); \
+				str->rs = (char*)realloc(str->rs, str->m);				\
 			}															\
 			memcpy(str->s + str->l, ks->buf + ks->begin, i - ks->begin); \
 			str->l = str->l + (i - ks->begin);							\
@@ -128,7 +130,8 @@ typedef struct __kstring_t {
 		}																\
 		if (str->s == 0) {												\
 			str->m = 1;													\
-			str->s = (char*)calloc(1, 1);								\
+			str->s = (char*)calloc(1, 1);\
+			str->rs = (char *)calloc(1,1);								\
 		}																\
 		str->s[str->l] = '\0';											\
 		return str->l;													\
@@ -183,6 +186,7 @@ typedef struct __kstring_t {
 		if (seq->seq.s == 0) { /* we can do this in the loop below, but that is slower */ \
 			seq->seq.m = 256; \
 			seq->seq.s = (char*)malloc(seq->seq.m); \
+			seq->seq.rs = (char *)malloc(seq->seq.m); \
 		} \
 		while ((c = ks_getc(ks)) != -1 && c != '>' && c != '+' && c != '@') { \
 			seq->seq.s[seq->seq.l++] = c; /* this is safe: we always have enough space for 1 char */ \
@@ -193,6 +197,7 @@ typedef struct __kstring_t {
 			seq->seq.m = seq->seq.l + 2; \
 			kroundup32(seq->seq.m); /* rounded to the next closest 2^k */ \
 			seq->seq.s = (char*)realloc(seq->seq.s, seq->seq.m); \
+			seq->seq.rs = (char *)realloc(seq->seq.s,seq->seq.m);\
 		} \
 		seq->seq.s[seq->seq.l] = 0;	/* null terminated string */ \
 		if (c != '+') return seq->seq.l; /* FASTA */ \

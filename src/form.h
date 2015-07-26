@@ -12,12 +12,10 @@ typedef struct options {
 	char 		refpath[PATH_LEN];
 	char 		hashdir[PATH_LEN];
 	uint16_t 	hit_limit;
-	//bool 		usecigar;
 	uint32_t 	rh_seed_len;
 	uint32_t 	len_limit;
 	uint32_t 	waitingLen;
 	int 		thread;
-	//bool 		autoload;
 	int 		argc;
 	char 		**argv;
 

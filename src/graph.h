@@ -1,31 +1,75 @@
 #include <vector>
 #include <iostream>
 #include <cstdlib>
-#include <string.h>
+#include <cstring>
 using namespace std;
 
 
 #include "hash.h"
 #include "ksw.h"
 
-typedef struct {
+typedef struct sam_rec{
 	uint8_t 	chrIndex;
 	uint32_t 	pos;
 	//char 		_cigar[LEN_LIMIT<<1];
-	string		headCigar;
-	string 		bodyCigar;
-	string 		tailCigar;
-	int 		headScore;
-	int 		bodyScore;
-	int 		tailScore;
+	//string		headCigar;
+	//string 		bodyCigar;
+	//string 		tailCigar;
+	string		cigar;
+	int 		score;
+
+	//int 		headScore;
+	//int 		bodyScore;
+	//int 		tailScore;
+	//int 		score;
+	uint16_t 	flag;
+	int16_t		MAQ;
+	struct sam_rec &	operator=(const struct sam_rec &r)  
+	{ 
+		chrIndex = r.chrIndex; 
+		pos = r.pos;
+		cigar = r.cigar;
+		score = r.score;
+		flag = r.flag;
+		MAQ = r.MAQ;
+		return *this;
+	}
+}Sam_Rec;
+
+
+typedef struct svsam_rec {
+	uint8_t 	chrIndex;
+	uint32_t 	pos;
+	//char 		_cigar[LEN_LIMIT<<1];
+	string		cigar;
 	int 		score;
 	uint16_t 	flag;
+	
 	uint32_t 	ref_end;
 	uint16_t 	read_end;
 	uint16_t	read_start;
 	uint32_t 	ref_start;
-}Sam_Rec;
-
+	uint16_t	lclip;
+	uint16_t 	rclip;
+	int16_t 	MAQ;
+	struct svsam_rec &	operator=(const struct svsam_rec &r)  
+	{ 
+		chrIndex = r.chrIndex; 
+		pos = r.pos;
+		// headCigar = r.headCigar;
+		// bodyCigar = r.bodyCigar;
+		// tailCigar = r.tailCigar;
+		cigar = r.cigar;
+		
+		score = r.score;
+		flag = r.flag;
+		ref_start = r.ref_start;
+		rclip = r.rclip;
+		lclip = r.lclip;
+		MAQ = r.MAQ;
+		return *this;
+	}
+}SvSam_Rec;
 // typedef struct {
 // 	uint8_t chrIndex;
 // 	uint32_t pos;
@@ -93,6 +137,8 @@ private:
 public:
 	int 	applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen, uint32_t left_start,
 		bool rc, uint32_t *startPos, char **chrName, int countChr,Sam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape);
+	int 	applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen, uint32_t left_start,
+		bool rc, uint32_t *startPos, char **chrName, int countChr,SvSam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape);
 private:
 	int 	transIntoDec(uint8_t *transstr,char *str,int length);
 	void 	buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uint16_t *seq_counter, uint16_t *p2startPos);
@@ -100,12 +146,16 @@ private:
 	int 	createVertex(uint16_t *seq_n, char *ref, uint16_t *seq_counter, uint16_t *p2startPos, uint32_t lenRef, uint32_t offset_ref, uint32_t kmer, char *read,uint32_t lenRead, uint32_t offset_read, uint32_t vertex_lim);
 	int 	CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t readlen, char *ref, uint32_t reflen, uint32_t left_start,
 			bool rc, uint32_t *startPos, char **chrName, int countChr,Sam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape);
+	int 	CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t readlen, char *ref, uint32_t reflen, uint32_t left_start,
+			bool rc, uint32_t *startPos, char **chrName, int countChr,SvSam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape);
 	void 	revstr(uint8_t *revstring, char *string, int len);
 	void 	dealCigar(char *cigar, char *headbuf, int headbuflen);
 	int 	findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,bool type, vertex *vnode);
 	void 	buildGraphic(RHashtable *rhashtab, char *seq, uint32_t lenSeq, char *read, uint32_t lenRead);
 	int 	dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref, int *score, uint32_t waitingLen, uint32_t left_start,
 			bool rc, uint32_t *startPos, char **chrName, int countChr,Sam_Rec *sam, int countSam, int8_t *matrix, int gapo, int gape);
+	int 	dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref, int *score, uint32_t waitingLen, uint32_t left_start,
+			bool rc, uint32_t *startPos, char **chrName, int countChr,SvSam_Rec *sam, int countSam, int8_t *matrix, int gapo, int gape);
 	void 	createLimVertex(uint16_t *seq_n,char *ref, uint32_t lenRef, char *read, uint32_t lenRead, uint16_t *seq_counter,uint16_t *p2startPos, uint32_t kmer, vertex head, vertex tail);
 	//void 	buildEdge(Graphic *gra);
 };

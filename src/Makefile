@@ -1,7 +1,7 @@
 CC=g++
 CFLAGS=-O3 -c -Wall
 DFLAGS=-g -Wall
-LDFLAGS= -lz -lm
+LDFLAGS= -lz -lm -lpthread
 
 KSWSOURCE=ksw.c 
 ALGNSOURCES=main.cpp aligner.cpp graph.cpp  readfl.cpp hash.cpp form.cpp 
@@ -20,6 +20,9 @@ $(ALIGNER): $(ALGNOBJECTS)
 
 $(INDEXER): $(INDOBJECTS)
 	$(CC)  $(INDOBJECTS) readfl.o -o $@ $(LDFLAGS)
+
+debug:
+	$(CC) $(DFLAGS) $(ALGNSOURCES) $(KSWSOURCE) $(LDFLAGS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@

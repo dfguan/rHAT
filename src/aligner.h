@@ -22,6 +22,7 @@ KSEQ_INIT(gzFile, gzread)
 #include <queue>
 using namespace std;
 
+
 typedef struct bucket
 {
 	uint32_t 		array_seq;// actually how many bucket should there be;
@@ -51,11 +52,29 @@ typedef struct bucket2
 	}
 }bkt2;
 
+typedef struct {
+	char	*qual;
+	int 	qual_len;
 
+	char   	*seq;
+	char 	*rseq;
+	int 	seq_len;
 
+	char 	*name;
+	int 	name_len;
+}rhat_seq;
+
+typedef struct {
+	uint32_t		*sed_rec;
+	uint16_t 		*sed_hit_times;
+	uint16_t		*unused_bkt;
+
+	RHashtable 		*rhashtab;
+	RHashtable 		*rrhashtab;
+
+}aux_var;
 
 class Aligner {
-	
 	bkt2 		preserved[20];//should be a defined number write
 	uint32_t 	pos[20];//write	
 	uint8_t 	chrIndex[20];//write
@@ -71,33 +90,63 @@ public:
 	Aligner(opts *opt);
 	~Aligner();
 	void Runtask();
+	
+	int 			applyNonSV(kseq_t *trunk,  RHashtable *rhashtab, RHashtable *rrhashtab, Sam_Rec *_sams, 
+	uint32_t *_sed_rec, uint16_t *_sed_hit_times, uint16_t *_unused_bkt);
+
+	int 			applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab, SvSam_Rec *_svsams, 
+	uint32_t *_sed_rec, uint16_t *_sed_hit_times, uint16_t *_unused_bkt);
 private:
 	uint32_t 		*sed_rec;//len_bases -14] ;//use malloc();
 	uint16_t 		*sed_hit_times;//use malloc
 	uint16_t 		*unused_bkt;
-	char 			*RCRead;
-	Sam_Rec 		*sams;	
-	Sam_Rec 		*svsams;
-	int 			applyNonSV(kseq_t *trunk,  RHashtable *rhashtab, RHashtable *rrhashtab);
-	void 			applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab);
-	int  			conductAlign(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab, 
-					std::priority_queue <bkt2> &cansHeap) ;
-	int 			conductAlign(kseq_t *trunk, char *read, char *rcRead, int lenRead, RHashtable *rhashtab, RHashtable *rrhashtab
-					,std::priority_queue <bkt2> &cansHeap, Sam_Rec *svsamsp);
-	void 			proCans(char *read, uint32_t lenRead, bool isRC, std::priority_queue<bkt2> &cansHeap);
-
-	uint32_t 		gen_sed(char *bases, uint32_t lenRead);
 	
-	void 			sort_sed(uint32_t usedseed);
-	void  			stat_sed(uint32_t usedseed);
-	int 			RevComRead(char *read,int len_read);
+	//uint32_t 		sv_interval;
+	
+
+	int 			conductAlign(kseq_t *trunk, char *read, char *rcRead, int lenRead, RHashtable *_rhashtab, RHashtable *_rrhashtab
+	,std::priority_queue <bkt2> &cansHeap, SvSam_Rec *_svsamsp); 
+
+	int 			conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RHashtable *_rhashtable, RHashtable *_rrhashtable, 
+		Sam_Rec *_sams); 
+	
+	void 			proCans(char *read, uint32_t lenRead, bool isRC,  std::priority_queue<bkt2> &cansHeap, 
+	uint32_t *_sed_rec, uint16_t *_sed_hit_times, uint16_t *_unused_bkt) ;
+
+	uint32_t 		gen_sed(char *bases, uint32_t len_bases, uint32_t *_sed_rec);
+	
+	void 			sort_sed(uint32_t *_sed_rec,uint32_t usedseed);
+
+	void  			stat_sed(uint32_t *_sed_rec, uint16_t *_sed_hit_times, uint16_t *_unused_bkt, uint32_t usedseed);
+	
+	int 			RevComRead(char *read, char *rcRead, int len_read);
+	
 	bool 			IsQualifiedRead(char *read,int len);
 
+	
 	//sv
+	int 			rhat_seq_read(kstream_t *_fp, kseq_t *_seqs, int n_needed);
+	int 			Qualified(SvSam_Rec *key,SvSam_Rec *set, int start, int end);
+	int 			connect(SvSam_Rec *rec1, SvSam_Rec *rec2, kseq_t *trunk);
+	int 			produceSAM(SvSam_Rec *_svsams , int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *len);
 
-	int 			Qualified(Sam_Rec *key,Sam_Rec *set, int start, int end, bool *issubstr);
-	int 			connect(Sam_Rec *rec1, Sam_Rec *rec2, kseq_t *trunk);
-	int 			produceSAM(int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *len);
+	int 			OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint8_t *_sam_details, int _n_seqs);
 };
+typedef struct aux
+{
+	int 		tid;
+	Aligner 	*aln;
+	int 		n_seqs;
+	aux_var 	com_var;
+	kseq_t 		*seqs;
+	Sam_Rec		*sams;
+	SvSam_Rec	**svsams;
+	opts 		*opt;
+	uint8_t 	*sam_details;// H:6 samamount L:2 isSAM, bits set by limit of read length might be changed in future
+}thread_aux;
+thread_aux *thread_initiate(int n_thread, RHashtable **rhashtab, RHashtable **rrhashtab, uint32_t *sed_rec, uint16_t *sed_hit_times, 
+	uint16_t *unused_bkt, opts *_opt, Aligner *aln) ;
+static void 	*thread_worker(void *data);
 extern 	uint8_t rev[];
+
 #endif

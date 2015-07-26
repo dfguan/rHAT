@@ -7,12 +7,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define RH_SEED_LEN 8
-#define WAITING_LEN 203
+#define RH_SEED_LEN 11
+#define WAITING_LEN 448
 
 
 
-char *const short_options = "w:m:k:a:b:q:r:h";
+char *const short_options = "w:m:k:a:b:q:r:t:h";
 struct option long_options[] = {
     { "window-hits",     1,   NULL,    'w'   },
     { "candidates",     1,   NULL,    'm' },
@@ -22,6 +22,7 @@ struct option long_options[] = {
     //{ "auto_load", 0, NULL, 'a'},
     {"gap-open", 1,  NULL, 'q'},
     {"gap-extension", 1,  NULL,'r'},
+    {"threads", 1, NULL, 't'},
     //{"gapextended", 1,  NULL,'e'},
     //{"match",   1,  NULL,'c'},
     {"help",    0,  NULL,'h'},
@@ -38,7 +39,7 @@ Form::Form(opts *opt)
 
     opt->rh_seed_len = RH_SEED_LEN; //might be useless
     opt->waitingLen = WAITING_LEN; // might be useless
-    opt->thread = 1000;
+    opt->thread = 1;
     opt->len_limit = 100000;
     opt->gapopen = 2;
     opt->gapextend = 1;
@@ -65,7 +66,8 @@ int Form::usage()
    	fprintf(stderr, "           -b, --mismatch         <int>           mismatch penalty for the alignments in extension phase [5]\n");
    	fprintf(stderr, "           -q, --gap-open         <int>           gap open penalty for the alignments in extension phase [2]\n");
    	fprintf(stderr, "           -r, --gap-extension    <int>           gap extension penalty for the alignments in extension phase [1]\n");
-   	fprintf(stderr, "           -h, --help                             help\n");
+   	fprintf(stderr, "           -t, --threads          <int>           number of thread threads [1]\n");
+    fprintf(stderr, "           -h, --help                             help\n");
     fprintf(stderr, "\n"); 
     return 0;
 }
@@ -100,6 +102,9 @@ int Form::opt_parse(int argc, char *argv[], opts* opt)
                 break;
             case 'b':
                 opt->mismatch = atoi(optarg);
+                break;
+            case 't':
+                opt->thread = atoi(optarg);
                 break;
             default:
                 fprintf(stderr,"not proper parameters\n");
