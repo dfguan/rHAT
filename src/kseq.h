@@ -197,7 +197,7 @@ typedef struct __kstring_t {
 			seq->seq.m = seq->seq.l + 2; \
 			kroundup32(seq->seq.m); /* rounded to the next closest 2^k */ \
 			seq->seq.s = (char*)realloc(seq->seq.s, seq->seq.m); \
-			seq->seq.rs = (char *)realloc(seq->seq.s,seq->seq.m);\
+			seq->seq.rs = (char *)realloc(seq->seq.rs,seq->seq.m);\
 		} \
 		seq->seq.s[seq->seq.l] = 0;	/* null terminated string */ \
 		if (c != '+') return seq->seq.l; /* FASTA */ \

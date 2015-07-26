@@ -897,6 +897,7 @@ int Aligner::rhat_seq_read(kstream_t *_fp, kseq_t *_seqs, int n_needed)
 	//temp[i].f = _fp;
 	while((temp[i].f = _fp) && kseq_read(temp+i)>=0 && i <n_needed ) {
 		//int z = 0;
+		//fprintf(stderr, "%s\t%d\n",temp[i].name.s, i);
 		RevComRead(temp[i].seq.s, temp[i].seq.rs, temp[i].seq.l);
 		++i;
 	}
@@ -936,7 +937,7 @@ int Aligner::applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab,
 
 	bkt_index[0] = 0;
 	len[0] = 0;
-	for (int i=0;i<pNumber -1;++i) len[i+1] = len[i] + LEN_BASES;
+	for (uint32_t i=0;i<pNumber -1;++i) len[i+1] = len[i] + LEN_BASES;
 	len[pNumber] = len[pNumber-1] + leftLen;
 
 	char *useread;
@@ -1055,6 +1056,7 @@ static void *thread_worker(void *data)
 		} else break;	
 	}
 	//return 0;
+	//return ;
 }
 
 
@@ -1208,6 +1210,7 @@ void Aligner::Runtask()
 			free(tid);
 
 			OutputSam(seqs, sams, svsams, sam_details, n_seqs);
+			//fprintf(stderr, "nothing wrong");
 
 		}
 		pthread_rwlock_destroy(&rwlock);
