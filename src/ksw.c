@@ -607,11 +607,145 @@ int ksw_global2(int qlen, const uint8_t *query, int tlen, const uint8_t *target,
 	return score;
 }
 
-int ksw_extend2_core(int qlen, const uint8_t *query, int tlen, const uint8_t *target, int m, const int8_t *mat, int gapo, int gape, int w, int h0, int soft_p, int *_qle, int *_tle, int *n_cigar_, uint32_t **cigar_)
+int ksw_extend_core(int qlen, const uint8_t *query, int tlen, const uint8_t *target, int m, const int8_t *mat, int gapo, int gape, int w, int h0, int *_qle, int *_tle, uint32_t **cigar_, int *n_cigar_)
+{
+	eh_t *eh; // score array
+	uint8_t *z; int n_col; // added for backtrack
+	int8_t *qp; // query profile
+    	int end_bonus = 0; int zdrop = 0;
+
+	int i, j, k, o_ins = gapo, o_del = gapo, e_ins = gape, e_del = gape, oe_del = gapo + gape, oe_ins = oe_del, beg, end, max, max_i, max_j, max_ins, max_del, max_ie, gscore, max_off;
+	assert(h0 > 0);
+	// allocate memory
+	qp = (int8_t *) malloc(qlen * m);
+	eh = (eh_t *) calloc(qlen + 1, 8);
+	// generate the query profile
+	for (k = i = 0; k < m; ++k) {
+		const int8_t *p = &mat[k * m];
+		for (j = 0; j < qlen; ++j) qp[i++] = p[query[j]];
+	}
+	// fill the first row
+	eh[0].h = h0; eh[1].h = h0 > oe_ins? h0 - oe_ins : 0;
+	for (j = 2; j <= qlen && eh[j-1].h > e_ins; ++j)
+		eh[j].h = eh[j-1].h - e_ins;
+	// adjust $w if it is too large
+	k = m * m;
+	for (i = 0, max = 0; i < k; ++i) // get the max score
+		max = max > mat[i]? max : mat[i];
+	max_ins = (int)((double)(qlen * max + end_bonus - o_ins) / e_ins + 1.);
+	max_ins = max_ins > 1? max_ins : 1;
+	w = w < max_ins? w : max_ins;
+	max_del = (int)((double)(qlen * max + end_bonus - o_del) / e_del + 1.);
+	max_del = max_del > 1? max_del : 1;
+	w = w < max_del? w : max_del; // TODO: is this necessary?
+    n_col = qlen < 2 * w + 1 ? qlen : 2 * w + 1; // added
+    z = (uint8_t *) malloc(n_col * tlen); // added
+    for (i = 0;  i<n_col*tlen; ++i) z[i] = 255;
+	// DP loop
+	max = h0, max_i = max_j = -1; max_ie = -1, gscore = -1;
+	max_off = 0;
+
+	beg = 0, end = qlen;
+	for (i = 0; LIKELY(i < tlen); ++i) {
+		int t, f = 0, h1, m = 0, mj = -1;
+		int8_t *q = &qp[target[i] * qlen];
+        uint8_t *zi = &z[i * n_col];
+		// apply the band and the constraint (if provided)
+		if (beg < i - w) beg = i - w;
+		if (end > i + w + 1) end = i + w + 1;
+		if (end > qlen) end = qlen;
+		// compute the first column
+		if (beg == 0) {
+			h1 = h0 - (o_del + e_del * (i + 1));
+			if (h1 < 0) h1 = 0;
+		} else h1 = 0;
+		for (j = beg; LIKELY(j < end); ++j) {
+			// At the beginning of the loop: eh[j] = { H(i-1,j-1), E(i,j) }, f = F(i,j) and h1 = H(i,j-1)
+			// Similar to SSE2-SW, cells are computed in the following order:
+			//   H(i,j)   = max{H(i-1,j-1)+S(i,j), E(i,j), F(i,j)}
+			//   E(i+1,j) = max{H(i,j)-gapo, E(i,j)} - gape
+			//   F(i,j+1) = max{H(i,j)-gapo, F(i,j)} - gape
+			eh_t *p = &eh[j];
+			int h, M = p->h, e = p->e; // get H(i-1,j-1) and E(i-1,j)
+            uint8_t d; // direction, added
+            int d_beg = i > w ? i - w : 0; // added
+			p->h = h1;          // set H(i,j-1) for the next row
+			M = M? M + q[j] : 0;// separating H and M to disallow a cigar like "100M3I3D20M"
+            d = M > e? 0 : 1;
+			h = M > e? M : e;   // e and f are guaranteed to be non-negative, so h>=0 even if M<0
+            d = h > f? d : 2;
+			h = h > f? h : f;
+			h1 = h;             // save H(i,j) to h1 for the next column
+			mj = m > h? mj : j; // record the position where max score is achieved
+			m = m > h? m : h;   // m is stored at eh[mj+1]
+			t = M - oe_del;
+			t = t > 0? t : 0;
+			e -= e_del;
+            d |= e > t? 1<<2 : 0;
+			e = e > t? e : t;   // computed E(i+1,j)
+			p->e = e;           // save E(i+1,j) for the next row
+			t = M - oe_ins;
+			t = t > 0? t : 0;
+			f -= e_ins;
+            d |= f > t? 2<<4 : 0;
+			f = f > t? f : t;   // computed F(i,j+1)
+            zi[j - d_beg] = d; // added
+        }
+		eh[end].h = h1; eh[end].e = 0;
+        if (j == qlen) {
+            max_ie = gscore > h1? max_ie : i;
+            gscore = gscore > h1? gscore : h1;
+        }
+		if (m == 0) break;
+		if (m > max) {
+			max = m, max_i = i, max_j = mj;
+			max_off = max_off > abs(mj - i)? max_off : abs(mj - i);
+		} else if (zdrop > 0) {
+			if (i - max_i > mj - max_j) {
+				if (max - m - ((i - max_i) - (mj - max_j)) * e_del > zdrop) break;
+			} else {
+				if (max - m - ((mj - max_j) - (i - max_i)) * e_ins > zdrop) break;
+			}
+		}
+		// update beg and end for the next round
+        for (j = beg; LIKELY(j < end) && eh[j].h == 0 && eh[j].e == 0; ++j);
+		beg = j;
+		for (j = end; LIKELY(j >= beg) && eh[j].h == 0 && eh[j].e == 0; --j);
+		end = j + 2 < qlen? j + 2 : qlen;
+		//beg = 0; end = qlen; // uncomment this line for debugging
+	}
+	if (n_cigar_ && cigar_) { // backtrack, added
+		int n_cigar = 0, m_cigar = 0, which = 0;
+		uint32_t *cigar = 0, tmp;
+		//i = tlen - 1; k = (i + w + 1 < qlen? i + w + 1 : qlen) - 1; // (i,k) points to the last cell
+        if (gscore <= 0 || gscore <= max - end_bonus) {
+            i = max_i; k = max_j;
+        } else {
+            i = max_ie; k = qlen-1;
+        }
+        if (_qle) *_qle = k + 1;
+        if (_tle) *_tle = i + 1;
+		while (i >= 0 && k >= 0) {
+			which = z[(long)i * n_col + (k - (i > w? i - w : 0))] >> (which<<1) & 3;
+			if (which == 0)      cigar = push_cigar(&n_cigar, &m_cigar, cigar, 0, 1), --i, --k;
+			else if (which == 1) cigar = push_cigar(&n_cigar, &m_cigar, cigar, 2, 1), --i;
+			else                 cigar = push_cigar(&n_cigar, &m_cigar, cigar, 1, 1), --k;
+		}
+		if (i >= 0) cigar = push_cigar(&n_cigar, &m_cigar, cigar, 2, i + 1);
+		if (k >= 0) cigar = push_cigar(&n_cigar, &m_cigar, cigar, 1, k + 1);
+		for (i = 0; i < n_cigar>>1; ++i) // reverse CIGAR
+			tmp = cigar[i], cigar[i] = cigar[n_cigar-1-i], cigar[n_cigar-1-i] = tmp;
+		*n_cigar_ = n_cigar, *cigar_ = cigar;
+	}
+
+	free(eh); free(qp); free(z);
+	return max; //max;
+}
+
+int ksw_extend2_core(int qlen, const uint8_t *query, int tlen, const uint8_t *target, int m, const int8_t *mat, int gapo, int gape, int w, int h0, int *_qle, int *_tle, int *n_cigar_, uint32_t **cigar_)
 {
     //int soft_p = 2;
-    int soft_score;
-    int soft_max;
+    
 	eh_t *eh; // score array
 	int8_t *qp; // query profile
 	int i, j, k, gapoe = gapo + gape, n_col;
@@ -643,7 +777,7 @@ int ksw_extend2_core(int qlen, const uint8_t *query, int tlen, const uint8_t *ta
 	n_col = qlen < 2 * w + 1 ? qlen : 2 * w + 1;
 	z = (uint8_t *) calloc(n_col * tlen,sizeof(uint8_t));
 	// DP loop
-    soft_max = 0 - soft_p * qlen;
+    //soft_max = 0 - soft_p * qlen;
 	max = h0, max_i = max_j = -1;
 	// E() && H()
 		beg = 0, end = 1;//qlen;
@@ -704,12 +838,7 @@ int ksw_extend2_core(int qlen, const uint8_t *query, int tlen, const uint8_t *ta
         {
             max = m, max_i = i, max_j = mj;
         }*/
-        soft_score = m - (qlen - mj - 1) * soft_p;
-        if (soft_score > soft_max)
-        {
-            max_i = i, max_j = mj;
-            soft_max = soft_score;
-        }
+       
 		// update beg and end for the next round
 			int _beg, _end;
 			// E()

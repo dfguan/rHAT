@@ -130,7 +130,7 @@ private:
 	int 			connect(SvSam_Rec *rec1, SvSam_Rec *rec2, kseq_t *trunk);
 	int 			produceSAM(SvSam_Rec *_svsams , int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *len);
 
-	int 			OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint8_t *_sam_details, int _n_seqs);
+	int 			OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint16_t *_sam_details, int _n_seqs);
 };
 typedef struct aux
 {
@@ -142,7 +142,7 @@ typedef struct aux
 	Sam_Rec		*sams;
 	SvSam_Rec	**svsams;
 	opts 		*opt;
-	uint8_t 	*sam_details;// H:6 samamount L:2 isSAM, bits set by limit of read length might be changed in future
+	uint16_t 	*sam_details;// H:6 samamount L:2 isSAM, bits set by limit of read length might be changed in future
 }thread_aux;
 thread_aux *thread_initiate(int n_thread, RHashtable **rhashtab, RHashtable **rrhashtab, uint32_t *sed_rec, uint16_t *sed_hit_times, 
 	uint16_t *unused_bkt, opts *_opt, Aligner *aln) ;

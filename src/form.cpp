@@ -44,7 +44,7 @@ Form::Form(opts *opt)
     opt->gapopen = 2;
     opt->gapextend = 1;
     opt->mismatch = 5;
-    opt->match = 1;
+    opt->match = 2;
 }
 
 int Form::usage()

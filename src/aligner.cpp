@@ -509,7 +509,7 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 
 }
 
-int Aligner::OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint8_t *_sam_details, int _n_seqs)
+int Aligner::OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint16_t *_sam_details, int _n_seqs)
 {
 	char *probQual = "*";
 	char *usedqual;
@@ -518,9 +518,9 @@ int Aligner::OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint8
 
 	for (int i=0; i<_n_seqs; ++i) {
 			if (_sam_details[i]) {
-				int countSam = _sam_details[i] >> 2;
+				int countSam = _sam_details[i] >> 1;
 				trunk = _seqs + i;
-				if (_sam_details[i]&1) {
+				if (_sam_details[i] & 1) {
 					Sam_Rec *nonSv = _sams + i * opt->canN;
 					for (int j=0; j< countSam; ++j) {
 						if (trunk->qual.s == NULL)// this might happend so qual is wrong?
@@ -927,7 +927,7 @@ int Aligner::applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab,
 	//split into several pieces
 	//
 	std::priority_queue<bkt2> 	cansHeap;
-	uint32_t pNumber = trunk->seq.l/LEN_BASES;
+	int  pNumber = trunk->seq.l/LEN_BASES;
 	uint32_t leftLen = LEN_BASES + trunk->seq.l - pNumber*LEN_BASES;
 	//if (leftLen) ++pNumber;
 	// produce the
@@ -937,7 +937,7 @@ int Aligner::applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab,
 
 	bkt_index[0] = 0;
 	len[0] = 0;
-	for (uint32_t i=0;i<pNumber -1;++i) len[i+1] = len[i] + LEN_BASES;
+	for (int i=0;i<pNumber -1;++i) len[i+1] = len[i] + LEN_BASES;
 	len[pNumber] = len[pNumber-1] + leftLen;
 
 	char *useread;
@@ -1081,7 +1081,7 @@ void Aligner::Runtask()
 	//output header
 	cout<<"@HD\tVN:"<<PACKAGE_VERSION<<endl;
 	for (int i=1;i<countChr;++i) {cout<<"@SQ\tSN:"<<ChrName[i]<<"\tLN:"<<Start_pos[i]-Start_pos[i-1]<<endl;}
-	cout<<"@PG\tID:"<<PACKAGE_NAME<<"\tVN:v.15.01\tCL:";
+	cout<<"@PG\tID:"<<PACKAGE_NAME<<"\tVN:0.1.0\tCL:";
 	for (int i=0;i<opt->argc;++i) {cout<<opt->argv[i]<<" ";}
 	cout<<endl;
 
@@ -1117,17 +1117,17 @@ void Aligner::Runtask()
 
 			RevComRead(seqs->seq.s, seqs->seq.rs, seqs->seq.l);
 
-			uint8_t sam_details = applyNonSV(seqs, rhashtab, rrhashtab, sams, sed_rec, sed_hit_times, unused_bkt);
+			uint16_t sam_details = applyNonSV(seqs, rhashtab, rrhashtab, sams, sed_rec, sed_hit_times, unused_bkt);
 
-			if (!sam_details) {
+			if (!sam_details && !(seqs->seq.l < LEN_BASES)) {
 
 				sam_details = applySV(seqs, rhashtab, rrhashtab, svsams, sed_rec, sed_hit_times, unused_bkt);
 
-				if (sam_details) sam_details = sam_details << 2 | 2;
+				if (sam_details) sam_details = sam_details << 1;
 
 			} else
-			 sam_details = sam_details << 2 | 1;
-
+			 	sam_details = sam_details << 1|1;
+			//printf("%s\t%u\n",seqs->name.s,sam_details);
 			OutputSam(seqs, sams, &svsams, &sam_details, 1);
 		}
 		kseq_destroy(seqs);
@@ -1152,7 +1152,7 @@ void Aligner::Runtask()
 
 		for (int i=0;i<n_needed;++i) svsams[i] = NULL;
 
-		uint8_t 	*sam_details = new uint8_t [n_needed];
+		uint16_t 	*sam_details = new uint16_t [n_needed];
 
 		if (sam_details == NULL)  { fprintf(stderr, "Failed when applying for new space! now exit"); exit(1);}
 

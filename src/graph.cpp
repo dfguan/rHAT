@@ -646,6 +646,241 @@ int 	Graphic::transIntoDec(uint8_t *transtr,char *str, int length)
 	}
 	return 0;
 }
+int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t totalReadlen, char *ref, uint32_t totalReflen, uint32_t left_start,
+		bool rc, uint32_t *chrStartP, char **chrName, int countChr, SvSam_Rec *sams, int countSam, int8_t *mat, int gapo, int gape)
+{
+	//calculate 0 to order[order_len-1];
+	//fprintf(stderr,"len%d",order_len);
+	//int score 	= 	0 ;
+
+	sams[countSam].cigar = "";
+	//sams[countSam].tailCigar = "";
+	//sams[countSam].headScore = 0;
+	//sams[countSam].bodyScore = 0;
+	sams[countSam].score = 0;
+
+
+	char *readStartP;
+	char *refStartP;
+	//char *cigarStartP = cigarbuf;
+	//int usedCigarsize;
+	//int totalUsedCigarSize;
+	//int refendpos = 0;
+	int n_cigar = 0;
+	uint32_t *cigar;
+	int qlen = 0;
+	int tlen = 0;
+	//int gtle;
+	//int max_off;
+	//int gscore;
+	//uint32_t endpos = node[order[1]].ref_seq + node[order[1]].len;
+	uint32_t startpos;
+	int w;
+	const 	char 	correspondTable[] = "MIDNSHP=X";
+	const 	uint8_t *readqry_;
+	const 	uint8_t *refqry_;
+
+	int read_len 	= 	node[order[order_len-1]].read_seq;
+	int ref_len 	=	read_len;
+
+
+	uint8_t  ind;
+	uint32_t r_startP;
+	uint32_t chrstartPos;
+	char  	 trans_cigar[50];
+	// 	 h0 = 0;
+	if (read_len != 0) {
+
+		//prseq(read,read_len,true);
+
+		//char headbuf[(WAITINGLEN<<1)+1];
+		revstr(readqry,read,read_len);
+		//prseq(read,read_len,true);
+		//transIntoDec(readqry,revreadqry,read_len);
+		refStartP = ref + node[order[order_len-1]].ref_seq - read_len;
+		//prseq(refStartP,read_len,true);
+		revstr(refqry,refStartP,read_len);
+		//cout<<node[order[order_len-1]].ref_seq;
+		//prseq(refStartP,read_len,true);
+		//transIntoDec(refqry,revrefqry,read_len);
+
+
+		readqry_ = readqry;
+		refqry_ = refqry;
+		//h0 = read_len; 
+		sams[countSam].score = ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len , &qlen, &tlen, &cigar, &n_cigar) - read_len;
+		//cout<<node[order[order_len-1]].ref_seq<<'\t'<<tlen<<"\t";
+		//cout<<score<<endl;
+
+	}
+	startpos = node[order[order_len-1]].ref_seq - tlen;
+	r_startP = left_start + startpos;
+	for (ind=1;ind<countChr;++ind)
+		if (chrStartP[ind]>r_startP)
+			break;
+	chrstartPos = r_startP - chrStartP[ind-1];
+	// if exists;
+
+	for (uint8_t i=0; i<countSam; ++i) {
+		if (ind == sams[i].chrIndex && chrstartPos == sams[i].pos)
+			return 0;
+	}
+	sams[countSam].chrIndex = ind;
+	sams[countSam].pos = chrstartPos;
+	sams[countSam].ref_start = chrstartPos;
+	//sams[countSam].read_start = read_len;
+	//cout<<seqN<<"\t";
+	if (rc)
+		sams[countSam].flag = 16;
+	else
+		sams[countSam].flag = 0;
+
+		//cout<<16<<"\t"; else cout<<0<<"\t";
+	//cout<<chrName[ind]<<"\t"<<chrstartPos<<"\t"<<0<<"\t";
+
+	//for(int z=n_cigar-1;z>=0;--z)
+	//	cout<<cigar[z];
+	//cout<<endl;
+	int startPosCigar = 0;
+	sams[countSam].read_start = read_len - qlen;
+	for (int z=n_cigar-1;z>=0;--z) {
+		//cout<<(cigar[z]>>4)<<correspondTable[cigar[z]&0xf];
+		startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+		sams[countSam].cigar.append(trans_cigar);
+		//++startPosCigar;
+	}
+	if (n_cigar != 0 ) free(cigar);
+
+	//if (n_cigar!=0) free(cigar);
+	//deal with middle part
+
+	for (int i= order_len-1;i>1;--i) {
+		// deal with the same part
+		//cigarStartP[0] = node[order[i]].len;
+		//cigarStartP[1] = 'M'
+		//stringLen = sprintf(cigarStartP,"%d",node[order[i]].len);
+		//cigarStartP += stringLen;
+		//cigarStartP[0] = 'M';
+
+		//cigarbuflen -= (stringLen + 1);
+		//cigarStartP += 1;
+		//cout<<node[order[i]].len<<'M';
+		startPosCigar += sprintf(trans_cigar, "%uM",node[order[i]].len);
+		sams[countSam].cigar.append(trans_cigar);
+		//sams[countSam]._cigar[startPosCigar] = 'M';
+		//++startPosCigar;
+		//deal with different one
+		sams[countSam].score += node[order[i]].len;
+		//cout<<node[order[i]].len<<"\t"<<score<<'\t'<<"1"<<endl;
+		readStartP = read + node[order[i]].read_seq + node[order[i]].len;
+		refStartP = ref + node[order[i]].ref_seq + node[order[i]].len;
+		read_len = node[order[i-1]].read_seq - (node[order[i]].read_seq + node[order[i]].len);
+		ref_len = node[order[i-1]].ref_seq - (node[order[i]].ref_seq + node[order[i]].len);
+		if ( 0 == read_len || 0 == ref_len) {
+			if (0 != read_len) {
+
+				//stringLen = sprintf(cigarStartP,"%d",read_len);
+				//cigarStartP += stringLen;
+				//cigarStartP[0] = 'D';
+				//cigarbuflen -= (stringLen + 1);
+				//cigarStartP += 1;
+
+				//score += read_len;
+				//cout<<read_len<<'D';
+				startPosCigar += sprintf(trans_cigar, "%uI",read_len);
+				//sams[countSam]._cigar[startPosCigar] = 'D';
+				//++startPosCigar;
+				sams[countSam].cigar.append(trans_cigar);
+				sams[countSam].score -= gapo + (read_len - 1)*gape;
+				//cout<<"\t"<<score<<'\t'<<"2"<<endl;
+
+			} else if (0 != ref_len) {
+				startPosCigar += sprintf(trans_cigar, "%uD",ref_len);
+				//sams[countSam]._cigar[startPosCigar] = 'I';
+				//++startPosCigar;
+				sams[countSam].cigar.append(trans_cigar);
+				sams[countSam].score -= gapo + (ref_len - 1)*gape;
+			}
+
+		} else {
+			transIntoDec(readqry,readStartP,read_len);
+			transIntoDec(refqry,refStartP,ref_len);
+
+			readqry_ = readqry;
+			refqry_ = refqry;
+			//prseq(readStartP,read_len,true);
+			//prseq(refStartP,ref_len,true);
+
+			w = read_len > ref_len ? read_len : ref_len;
+
+			sams[countSam].score += ksw_global(read_len,readqry_,ref_len,refqry_,5,mat,gapo,gape,w,&n_cigar,&cigar);
+
+			//fprintf(stderr,"%d %d %d %d %d %d\n",order[i-1],order[i],read_len,ref_len,score, n_cigar);
+			for (int z=0;z<n_cigar;++z) {
+				startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+				//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
+				//++startPosCigar;
+				sams[countSam].cigar.append(trans_cigar);
+			}
+			//cout<<temp<<"\t"<<score<<'\t'<<"4"<<endl;
+			free(cigar);
+			//cigarbuflen -= usedCigarsize;
+			//cigarStartP += usedCigarsize;
+		}
+
+	}
+
+	//stringLen = sprintf(cigarStartP,"%d",node[order[1]].len);
+	//cigarStartP += stringLen;
+	//cigarStartP[0] = 'M';//
+
+	//cigarbuflen -= (stringLen + 1);
+	//cigarStartP += 1;
+	//cout<<node[order[1]].len<<'M';
+	startPosCigar += sprintf(trans_cigar, "%uM",node[order[1]].len);
+	//sams[countSam]._cigar[startPosCigar] = 'M';
+	//++startPosCigar;
+	sams[countSam].cigar.append(trans_cigar);
+	sams[countSam].score += node[order[1]].len;
+	//cout<<"\t"<<score<<'\t'<<"5"<<endl;
+	readStartP = read + node[order[1]].read_seq + node[order[1]].len;
+	refStartP = ref + node[order[1]].ref_seq + node[order[1]].len;
+	read_len = totalReadlen - (node[order[1]].read_seq + node[order[1]].len);
+	ref_len = read_len;//may be discussed later
+	qlen = 0;
+	tlen = 0;
+
+	if (0 != read_len) { // if without else may be it will display previous cigar {
+		transIntoDec(readqry,readStartP,read_len);
+		transIntoDec(refqry,refStartP,ref_len);
+
+		readqry_ = readqry;
+		refqry_ = refqry;
+
+		sams[countSam].score = ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len , &qlen, &tlen, &cigar, &n_cigar) - read_len;
+		//score += ksw_global(read_len,readStartP,ref_len,refStartP,5,mat,GAPOPEN,GAPEXTENDED,read_len,&n_cigar,&cigar);
+		//fprintf(stderr,"%d\n",score);
+		for (int z=0;z<n_cigar;++z) {
+			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+			sams[countSam].cigar.append(trans_cigar);
+
+			//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
+			//++startPosCigar;
+		}
+		free(cigar);
+		//endpos = node[order[1]].ref_seq + node[order[1]].len + tlen;
+		//cout<<"\t"<<score<<'\t'<<"6"<<endl;
+	}
+	//cout<<endl<<score<<endl;
+
+	//sams[countSam]._cigar[startPosCigar] = '\0';
+	sams[countSam].ref_end = chrstartPos + node[order[1]].ref_seq + node[order[1]].len + tlen;
+	sams[countSam].read_end = node[order[1]].read_seq + node[order[1]].len + qlen;
+	//sams[countSam].score = sams[countSam].headScore + sams[countSam].bodyScore + sams[countSam].tailScore;
+	//cout<<"\t"<<"*"<<"\t"<<0<<"\t"<<0<<"\t"<<"*"<<"\t"<<seqQual<<endl;
+	//cout<<sams[countSam]._cigar<<endl;
+	return 1;
+}
 
 int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t totalReadlen, char *ref, uint32_t totalReflen, uint32_t left_start,
 		bool rc, uint32_t *chrStartP, char **chrName, int countChr, Sam_Rec *sams, int countSam, int8_t *mat, int gapo, int gape)
@@ -669,7 +904,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//int refendpos = 0;
 	int n_cigar = 0;
 	uint32_t *cigar;
-	int qlen;
+	int qlen = 0;
 	int tlen = 0;
 	//int gtle;
 	//int max_off;
@@ -689,8 +924,9 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	uint32_t r_startP;
 	uint32_t chrstartPos;
 	char  	 trans_cigar[50];
-
-	if (read_len != 0) {
+	int h0 = 0;
+	
+	if (read_len != 0 ) {
 
 		//prseq(read,read_len,true);
 
@@ -708,8 +944,8 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 
 		readqry_ = readqry;
 		refqry_ = refqry;
-
-		sams[countSam].score = ksw_extend2_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 10, node[order[order_len-1]].len, 5, &qlen, &tlen, &n_cigar, &cigar);
+		
+		sams[countSam].score = ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len, &qlen, &tlen, &cigar, &n_cigar)  - read_len;
 		//cout<<node[order[order_len-1]].ref_seq<<'\t'<<tlen<<"\t";
 		//cout<<score<<endl;
 
@@ -744,6 +980,11 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//cout<<endl;
 	int startPosCigar = 0;
 
+	if (qlen != read_len ) {
+		startPosCigar += sprintf(trans_cigar, "%uS", read_len - qlen);
+		sams[countSam].cigar.append(trans_cigar);
+	}// proves that softclipings do exist
+
 	for (int z=n_cigar-1;z>=0;--z) {
 		//cout<<(cigar[z]>>4)<<correspondTable[cigar[z]&0xf];
 		startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
@@ -855,7 +1096,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		readqry_ = readqry;
 		refqry_ = refqry;
 
-		sams[countSam].score += ksw_extend2_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, read_len, node[order[1]].len, 5, &qlen, &tlen, &n_cigar, &cigar);
+		sams[countSam].score = ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len, &qlen, &tlen, &cigar,  &n_cigar) - read_len;
 		//score += ksw_global(read_len,readStartP,ref_len,refStartP,5,mat,GAPOPEN,GAPEXTENDED,read_len,&n_cigar,&cigar);
 		//fprintf(stderr,"%d\n",score);
 		for (int z=0;z<n_cigar;++z) {
@@ -865,12 +1106,17 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 			//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
 			//++startPosCigar;
 		}
+		if (qlen != read_len) {
+			startPosCigar += sprintf(trans_cigar, "%uS", read_len - qlen);
+			sams[countSam].cigar.append(trans_cigar);
+		}
+
 		free(cigar);
 		//endpos = node[order[1]].ref_seq + node[order[1]].len + tlen;
 		//cout<<"\t"<<score<<'\t'<<"6"<<endl;
 	}
 	//cout<<endl<<score<<endl;
-
+	
 	//sams[countSam]._cigar[startPosCigar] = '\0';
 	//sams[countSam].ref_end = chrstartPos + node[order[1]].ref_seq + node[order[1]].len - startpos;
 	//sams[countSam].read_end = node[order[1]].read_seq + node[order[1]].len;
@@ -879,240 +1125,6 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//cout<<sams[countSam]._cigar<<endl;
 	return 1;
 }
-
-int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t totalReadlen, char *ref, uint32_t totalReflen, uint32_t left_start,
-		bool rc, uint32_t *chrStartP, char **chrName, int countChr, SvSam_Rec *sams, int countSam, int8_t *mat, int gapo, int gape)
-{
-	//calculate 0 to order[order_len-1];
-	//fprintf(stderr,"len%d",order_len);
-	//int score 	= 	0 ;
-
-	sams[countSam].cigar = "";
-	//sams[countSam].tailCigar = "";
-	//sams[countSam].headScore = 0;
-	//sams[countSam].bodyScore = 0;
-	sams[countSam].score = 0;
-
-
-	char *readStartP;
-	char *refStartP;
-	//char *cigarStartP = cigarbuf;
-	//int usedCigarsize;
-	//int totalUsedCigarSize;
-	//int refendpos = 0;
-	int n_cigar = 0;
-	uint32_t *cigar;
-	int qlen;
-	int tlen = 0;
-	//int gtle;
-	//int max_off;
-	//int gscore;
-	//uint32_t endpos = node[order[1]].ref_seq + node[order[1]].len;
-	uint32_t startpos;
-	int w;
-	const 	char 	correspondTable[] = "MIDNSHP=X";
-	const 	uint8_t *readqry_;
-	const 	uint8_t *refqry_;
-
-	int read_len 	= 	node[order[order_len-1]].read_seq;
-	int ref_len 	=	read_len;
-
-
-	uint8_t  ind;
-	uint32_t r_startP;
-	uint32_t chrstartPos;
-	char  	 trans_cigar[50];
-
-	if (read_len != 0) {
-
-		//prseq(read,read_len,true);
-
-		//char headbuf[(WAITINGLEN<<1)+1];
-		revstr(readqry,read,read_len);
-		//prseq(read,read_len,true);
-		//transIntoDec(readqry,revreadqry,read_len);
-		refStartP = ref + node[order[order_len-1]].ref_seq - read_len;
-		//prseq(refStartP,read_len,true);
-		revstr(refqry,refStartP,read_len);
-		//cout<<node[order[order_len-1]].ref_seq;
-		//prseq(refStartP,read_len,true);
-		//transIntoDec(refqry,revrefqry,read_len);
-
-
-		readqry_ = readqry;
-		refqry_ = refqry;
-
-		sams[countSam].score = ksw_extend2_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 10, node[order[order_len-1]].len, 5, &qlen, &tlen, &n_cigar, &cigar);
-		//cout<<node[order[order_len-1]].ref_seq<<'\t'<<tlen<<"\t";
-		//cout<<score<<endl;
-
-	}
-	startpos = node[order[order_len-1]].ref_seq - tlen;
-	r_startP = left_start + startpos;
-	for (ind=1;ind<countChr;++ind)
-		if (chrStartP[ind]>r_startP)
-			break;
-	chrstartPos = r_startP - chrStartP[ind-1];
-	// if exists;
-
-	for (uint8_t i=0; i<countSam; ++i) {
-		if (ind == sams[i].chrIndex && chrstartPos == sams[i].pos)
-			return 0;
-	}
-	sams[countSam].chrIndex = ind;
-	sams[countSam].pos = chrstartPos;
-	sams[countSam].ref_start = chrstartPos + tlen;
-	sams[countSam].read_start = read_len;
-	//cout<<seqN<<"\t";
-	if (rc)
-		sams[countSam].flag = 16;
-	else
-		sams[countSam].flag = 0;
-
-		//cout<<16<<"\t"; else cout<<0<<"\t";
-	//cout<<chrName[ind]<<"\t"<<chrstartPos<<"\t"<<0<<"\t";
-
-	//for(int z=n_cigar-1;z>=0;--z)
-	//	cout<<cigar[z];
-	//cout<<endl;
-	int startPosCigar = 0;
-
-	for (int z=n_cigar-1;z>=0;--z) {
-		//cout<<(cigar[z]>>4)<<correspondTable[cigar[z]&0xf];
-		startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-		sams[countSam].cigar.append(trans_cigar);
-		//++startPosCigar;
-	}
-	if (n_cigar != 0 ) free(cigar);
-
-	//if (n_cigar!=0) free(cigar);
-	//deal with middle part
-
-	for (int i= order_len-1;i>1;--i) {
-		// deal with the same part
-		//cigarStartP[0] = node[order[i]].len;
-		//cigarStartP[1] = 'M'
-		//stringLen = sprintf(cigarStartP,"%d",node[order[i]].len);
-		//cigarStartP += stringLen;
-		//cigarStartP[0] = 'M';
-
-		//cigarbuflen -= (stringLen + 1);
-		//cigarStartP += 1;
-		//cout<<node[order[i]].len<<'M';
-		startPosCigar += sprintf(trans_cigar, "%uM",node[order[i]].len);
-		sams[countSam].cigar.append(trans_cigar);
-		//sams[countSam]._cigar[startPosCigar] = 'M';
-		//++startPosCigar;
-		//deal with different one
-		sams[countSam].score += node[order[i]].len;
-		//cout<<node[order[i]].len<<"\t"<<score<<'\t'<<"1"<<endl;
-		readStartP = read + node[order[i]].read_seq + node[order[i]].len;
-		refStartP = ref + node[order[i]].ref_seq + node[order[i]].len;
-		read_len = node[order[i-1]].read_seq - (node[order[i]].read_seq + node[order[i]].len);
-		ref_len = node[order[i-1]].ref_seq - (node[order[i]].ref_seq + node[order[i]].len);
-		if ( 0 == read_len || 0 == ref_len) {
-			if (0 != read_len) {
-
-				//stringLen = sprintf(cigarStartP,"%d",read_len);
-				//cigarStartP += stringLen;
-				//cigarStartP[0] = 'D';
-				//cigarbuflen -= (stringLen + 1);
-				//cigarStartP += 1;
-
-				//score += read_len;
-				//cout<<read_len<<'D';
-				startPosCigar += sprintf(trans_cigar, "%uI",read_len);
-				//sams[countSam]._cigar[startPosCigar] = 'D';
-				//++startPosCigar;
-				sams[countSam].cigar.append(trans_cigar);
-				sams[countSam].score -= gapo + (read_len - 1)*gape;
-				//cout<<"\t"<<score<<'\t'<<"2"<<endl;
-
-			} else if (0 != ref_len) {
-				startPosCigar += sprintf(trans_cigar, "%uD",ref_len);
-				//sams[countSam]._cigar[startPosCigar] = 'I';
-				//++startPosCigar;
-				sams[countSam].cigar.append(trans_cigar);
-				sams[countSam].score -= gapo + (ref_len - 1)*gape;
-			}
-
-		} else {
-			transIntoDec(readqry,readStartP,read_len);
-			transIntoDec(refqry,refStartP,ref_len);
-
-			readqry_ = readqry;
-			refqry_ = refqry;
-			//prseq(readStartP,read_len,true);
-			//prseq(refStartP,ref_len,true);
-
-			w = read_len > ref_len ? read_len : ref_len;
-
-			sams[countSam].score += ksw_global(read_len,readqry_,ref_len,refqry_,5,mat,gapo,gape,w,&n_cigar,&cigar);
-
-			//fprintf(stderr,"%d %d %d %d %d %d\n",order[i-1],order[i],read_len,ref_len,score, n_cigar);
-			for (int z=0;z<n_cigar;++z) {
-				startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-				//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
-				//++startPosCigar;
-				sams[countSam].cigar.append(trans_cigar);
-			}
-			//cout<<temp<<"\t"<<score<<'\t'<<"4"<<endl;
-			free(cigar);
-			//cigarbuflen -= usedCigarsize;
-			//cigarStartP += usedCigarsize;
-		}
-
-	}
-
-	//stringLen = sprintf(cigarStartP,"%d",node[order[1]].len);
-	//cigarStartP += stringLen;
-	//cigarStartP[0] = 'M';//
-
-	//cigarbuflen -= (stringLen + 1);
-	//cigarStartP += 1;
-	//cout<<node[order[1]].len<<'M';
-	startPosCigar += sprintf(trans_cigar, "%uM",node[order[1]].len);
-	//sams[countSam]._cigar[startPosCigar] = 'M';
-	//++startPosCigar;
-	sams[countSam].cigar.append(trans_cigar);
-	sams[countSam].score += node[order[1]].len;
-	//cout<<"\t"<<score<<'\t'<<"5"<<endl;
-	readStartP = read + node[order[1]].read_seq + node[order[1]].len;
-	refStartP = ref + node[order[1]].ref_seq + node[order[1]].len;
-	read_len = totalReadlen - (node[order[1]].read_seq + node[order[1]].len);
-	ref_len = read_len;//may be discussed later
-	if (0 != read_len) { // if without else may be it will display previous cigar {
-		transIntoDec(readqry,readStartP,read_len);
-		transIntoDec(refqry,refStartP,ref_len);
-
-		readqry_ = readqry;
-		refqry_ = refqry;
-
-		sams[countSam].score += ksw_extend2_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, read_len, node[order[1]].len, 5, &qlen, &tlen, &n_cigar, &cigar);
-		//score += ksw_global(read_len,readStartP,ref_len,refStartP,5,mat,GAPOPEN,GAPEXTENDED,read_len,&n_cigar,&cigar);
-		//fprintf(stderr,"%d\n",score);
-		for (int z=0;z<n_cigar;++z) {
-			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-			sams[countSam].cigar.append(trans_cigar);
-
-			//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
-			//++startPosCigar;
-		}
-		free(cigar);
-		//endpos = node[order[1]].ref_seq + node[order[1]].len + tlen;
-		//cout<<"\t"<<score<<'\t'<<"6"<<endl;
-	}
-	//cout<<endl<<score<<endl;
-
-	//sams[countSam]._cigar[startPosCigar] = '\0';
-	sams[countSam].ref_end = chrstartPos + node[order[1]].ref_seq + node[order[1]].len - startpos;
-	sams[countSam].read_end = node[order[1]].read_seq + node[order[1]].len;
-	//sams[countSam].score = sams[countSam].headScore + sams[countSam].bodyScore + sams[countSam].tailScore;
-	//cout<<"\t"<<"*"<<"\t"<<0<<"\t"<<0<<"\t"<<"*"<<"\t"<<seqQual<<endl;
-	//cout<<sams[countSam]._cigar<<endl;
-	return 1;
-}
-
 
 int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,bool type, vertex *vnode)
 {

@@ -1,0 +1,335 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ACCEPT_VERTEX	graph.cpp	17;"	d	file:
+AC_KSEQ_H	kseq.h	29;"	d
+ALGNOBJECTS	Makefile	/^ALGNOBJECTS=$(ALGNSOURCES:.cpp=.o) $(KSWSOURCE:.c=.o)$/;"	m
+ALGNSOURCES	Makefile	/^ALGNSOURCES=main.cpp aligner.cpp graph.cpp  readfl.cpp hash.cpp form.cpp $/;"	m
+ALIGNER	Makefile	/^ALIGNER=rHAT-aligner$/;"	m
+ALIGNER_H_	aligner.h	3;"	d
+ASeed	graph.h	/^class ASeed{$/;"	c
+Aligner	aligner.cpp	/^Aligner::Aligner(opts *_opt)$/;"	f	class:Aligner
+Aligner	aligner.h	/^class Aligner {$/;"	c
+CC	Makefile	/^CC=g++$/;"	m
+CFLAGS	Makefile	/^CFLAGS=-O3 -c -Wall$/;"	m
+CONTACT	desc.h	3;"	d
+CalEditDistancewithCigar	graph.cpp	/^int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t totalReadlen, char *ref, uint32_t totalReflen, uint32_t left_start,$/;"	f	class:Graphic
+ChrName	aligner.h	/^	char 		**ChrName;\/\/readable$/;"	m	class:Aligner
+DFLAGS	Makefile	/^DFLAGS=-g -Wall$/;"	m
+E	ksw.c	/^	__m128i *qp, *H0, *H1, *E, *Hmax;$/;"	m	struct:_kswq_t	file:
+FORELEN	aligner.cpp	15;"	d	file:
+Form	form.cpp	/^Form::Form(opts *opt)$/;"	f	class:Form
+Form	form.h	/^class Form {$/;"	c
+Form	formh.cpp	/^Form::Form(opts *opt)$/;"	f	class:Form
+Form	formh.h	/^class Form {$/;"	c
+Graphic	graph.h	/^class Graphic{$/;"	c
+H0	ksw.c	/^	__m128i *qp, *H0, *H1, *E, *Hmax;$/;"	m	struct:_kswq_t	file:
+H1	ksw.c	/^	__m128i *qp, *H0, *H1, *E, *Hmax;$/;"	m	struct:_kswq_t	file:
+HASH_H_	hash.h	2;"	d
+Hash	hash.h	/^	class Hash{	$/;"	c
+Hash	whash.h	/^	class Hash{	$/;"	c
+Hashtab	hash.h	/^	}Hashtab;$/;"	t	typeref:struct:__anon7
+Hashtab	whash.h	/^	}Hashtab;$/;"	t	typeref:struct:__anon1
+Hmax	ksw.c	/^	__m128i *qp, *H0, *H1, *E, *Hmax;$/;"	m	struct:_kswq_t	file:
+INDEXER	Makefile	/^INDEXER=rHAT-indexer$/;"	m
+INDOBJECTS	Makefile	/^INDOBJECTS=$(INDSOURCES:.cpp=.o) $(KSWSOURCE:.c=.o)$/;"	m
+INDSOURCES	Makefile	/^INDSOURCES=whash.cpp genhash.cpp formh.cpp$/;"	m
+KSEQ_INIT	kseq.h	223;"	d
+KSTREAM_INIT	kseq.h	142;"	d
+KSTRING_T	kseq.h	79;"	d
+KSWSOURCE	Makefile	/^KSWSOURCE=ksw.c $/;"	m
+KSW_XBYTE	ksw.h	6;"	d
+KSW_XSTART	ksw.h	9;"	d
+KSW_XSTOP	ksw.h	7;"	d
+KSW_XSUBO	ksw.h	8;"	d
+KS_SEP_MAX	kseq.h	37;"	d
+KS_SEP_SPACE	kseq.h	35;"	d
+KS_SEP_TAB	kseq.h	36;"	d
+LDFLAGS	Makefile	/^LDFLAGS= -lz -lm -lpthread$/;"	m
+LEN	aligner.h	6;"	d
+LEN_BASES	aligner.h	4;"	d
+LIKELY	ksw.c	37;"	d	file:
+LIKELY	ksw.c	40;"	d	file:
+MAQ	graph.h	/^	int16_t		MAQ;$/;"	m	struct:sam_rec
+MAQ	graph.h	/^	int16_t 	MAQ;$/;"	m	struct:svsam_rec
+MINUS_INF	ksw.c	492;"	d	file:
+NUM_FILE	hash.h	3;"	d
+NUM_FILE	whash.h	3;"	d
+N_LIMIT	hash.h	4;"	d
+N_LIMIT	whash.h	4;"	d
+N_NEEDED	aligner.cpp	13;"	d	file:
+OutputSam	aligner.cpp	/^int Aligner::OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint8_t *_sam_details, int _n_seqs)$/;"	f	class:Aligner
+PACKAGE_NAME	desc.h	1;"	d
+PACKAGE_VERSION	desc.h	2;"	d
+PATH_LEN	form.h	6;"	d
+PATH_LEN	formh.h	4;"	d
+PRINT_LOG	main.cpp	16;"	d	file:
+Qualified	aligner.cpp	/^int Aligner::Qualified(SvSam_Rec *key,SvSam_Rec *set, int start, int end)$/;"	f	class:Aligner
+READ_H_	readfl.h	2;"	d
+RH_SEED_LEN	form.cpp	10;"	d	file:
+RHashtable	graph.cpp	/^RHashtable::RHashtable(uint32_t kmer,uint32_t forelen, uint32_t len_limit)$/;"	f	class:RHashtable
+RHashtable	graph.h	/^class RHashtable {$/;"	c
+RevComRead	aligner.cpp	/^int Aligner::RevComRead(char *read, char *rcRead, int len_read)$/;"	f	class:Aligner
+Runtask	aligner.cpp	/^void Aligner::Runtask()$/;"	f	class:Aligner
+SELECT_NUM	aligner.cpp	11;"	d	file:
+STD_EXTRACT	graph.cpp	15;"	d	file:
+Sam_Rec	graph.h	/^}Sam_Rec;$/;"	t	typeref:struct:sam_rec
+Start_pos	aligner.h	/^	uint32_t 	Start_pos[100];\/\/readable$/;"	m	class:Aligner
+SvSam_Rec	graph.h	/^}SvSam_Rec;$/;"	t	typeref:struct:svsam_rec
+UNLIKELY	ksw.c	38;"	d	file:
+UNLIKELY	ksw.c	41;"	d	file:
+VERTEX_LIMIT	graph.cpp	18;"	d	file:
+WAITINGLEN	graph.cpp	13;"	d	file:
+WAITINGLENLIMIT	graph.cpp	14;"	d	file:
+WAITING_LEN	form.cpp	11;"	d	file:
+WHASH_H_	whash.h	2;"	d
+__AC_KSW_H	ksw.h	2;"	d
+__KSEQ_BASIC	kseq.h	148;"	d
+__KSEQ_READ	kseq.h	173;"	d
+__KSEQ_TYPE	kseq.h	216;"	d
+__KS_BASIC	kseq.h	49;"	d
+__KS_GETC	kseq.h	65;"	d
+__KS_GETUNTIL	kseq.h	91;"	d
+__KS_TYPE	kseq.h	39;"	d
+__kstring_t	kseq.h	/^typedef struct __kstring_t {$/;"	s
+__max_16	ksw.c	118;"	d	file:
+__max_8	ksw.c	239;"	d	file:
+_kswq_t	ksw.c	/^struct _kswq_t {$/;"	s	file:
+aln	aligner.h	/^	Aligner 	*aln;$/;"	m	struct:aux
+applyGraphic	graph.cpp	/^int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen,$/;"	f	class:Graphic
+applyNonSV	aligner.cpp	/^int  Aligner::applyNonSV(kseq_t *trunk,  RHashtable *rhashtab, RHashtable *rrhashtab, Sam_Rec *_sams,$/;"	f	class:Aligner
+applySV	aligner.cpp	/^int Aligner::applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab, SvSam_Rec *_svsams, uint32_t *_sed_rec, uint16_t *_sed_hit_times, uint16_t *_unused_bkt)$/;"	f	class:Aligner
+argc	form.h	/^	int 		argc;$/;"	m	struct:options
+argv	form.h	/^	char 		**argv;$/;"	m	struct:options
+array_seq	aligner.h	/^	uint32_t 		array_seq;\/\/ actually how many bucket should there be;$/;"	m	struct:bucket
+aux	aligner.h	/^typedef struct aux$/;"	s
+aux_var	aligner.h	/^}aux_var;$/;"	t	typeref:struct:__anon4
+binsearch	graph.cpp	/^uint16_t binsearch(uint16_t sval,uint16_t low,uint16_t high,uint16_t *bkt)$/;"	f
+binsearchPos	graph.cpp	/^uint16_t binsearchPos(uint16_t sval,uint16_t low,uint16_t high,uint16_t *bkt)$/;"	f
+bkt	aligner.h	/^}bkt;$/;"	t	typeref:struct:bucket
+bkt2	aligner.h	/^}bkt2;$/;"	t	typeref:struct:bucket2
+bucket	aligner.h	/^typedef struct bucket$/;"	s
+bucket2	aligner.h	/^typedef struct bucket2$/;"	s
+buildCounter	graph.cpp	/^void Graphic::buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uint16_t *seq_counter, uint16_t *p2startPos)$/;"	f	class:Graphic
+buildRHash	graph.cpp	/^void RHashtable::buildRHash(char *seq, uint32_t lenSeq)$/;"	f	class:RHashtable
+canN	form.h	/^	uint32_t 	canN;$/;"	m	struct:options
+changeRef	readfl.cpp	/^char changeRef[128] = {$/;"	v
+chrIndex	aligner.h	/^	uint8_t 	chrIndex[20];\/\/write$/;"	m	class:Aligner
+chrIndex	graph.h	/^	uint8_t 	chrIndex;$/;"	m	struct:sam_rec
+chrIndex	graph.h	/^	uint8_t 	chrIndex;$/;"	m	struct:svsam_rec
+cigar	graph.h	/^	string		cigar;$/;"	m	struct:sam_rec
+cigar	graph.h	/^	string		cigar;$/;"	m	struct:svsam_rec
+com_var	aligner.h	/^	aux_var 	com_var;$/;"	m	struct:aux
+combineStr	readfl.cpp	/^void combineStr(char *str1,char *str2,uint32_t len) $/;"	f
+compar	aligner.cpp	/^int compar(const void *p,const void *q)$/;"	f
+comparator	hash.cpp	/^int comparator(const void *p, const void *q)$/;"	f
+comparator	whash.cpp	/^int comparator(const void *p, const void *q)$/;"	f
+compare_bkt2	aligner.cpp	/^int compare_bkt2(const void *p,const void *q)$/;"	f
+compare_kmer_value	graph.cpp	/^int compare_kmer_value(const void *p, const void *q, void *t)$/;"	f
+compare_sam	aligner.cpp	/^int compare_sam(const void *p, const void *q, void *arg)$/;"	f
+conductAlign	aligner.cpp	/^int Aligner::conductAlign(kseq_t *trunk, char *read, char *rcRead, int lenRead, RHashtable *_rhashtab, RHashtable *_rrhashtab$/;"	f	class:Aligner
+conductAlign	aligner.cpp	/^int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RHashtable *_rhashtable, RHashtable *_rrhashtable,$/;"	f	class:Aligner
+connect	aligner.cpp	/^int Aligner::connect(SvSam_Rec *rec1, SvSam_Rec *rec2, kseq_t *trunk)$/;"	f	class:Aligner
+countChr	aligner.h	/^	int 		countChr;\/\/readable  $/;"	m	class:Aligner
+createLimVertex	graph.cpp	/^void Graphic::createLimVertex(uint16_t *seq_n,char *ref, uint32_t lenRef, char *read, uint32_t lenRead,$/;"	f	class:Graphic
+createVertex	graph.cpp	/^int	Graphic::createVertex(uint16_t *seq_n, char *ref, uint16_t *seq_counter, uint16_t *p2startPos, uint32_t lenRef, uint32_t offset_ref,$/;"	f	class:Graphic
+dealCigar	graph.cpp	/^void 	Graphic::dealCigar(char *cigarbuf, char *headbuf, int headbuflen)$/;"	f	class:Graphic
+dealGraph	graph.cpp	/^int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref, int *score, uint32_t waitingLen, uint32_t left_start,$/;"	f	class:Graphic
+e	ksw.c	/^	int32_t h, e;$/;"	m	struct:__anon5	file:
+eh_t	ksw.c	/^} eh_t;$/;"	t	typeref:struct:__anon5	file:
+fig_pos	aligner.cpp	/^uint32_t fig_pos(uint32_t pos,uint32_t offset)$/;"	f
+findPos	graph.cpp	/^int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,bool type, vertex *vnode)$/;"	f	class:Graphic
+flag	graph.h	/^	uint16_t 	flag;$/;"	m	struct:sam_rec
+flag	graph.h	/^	uint16_t 	flag;$/;"	m	struct:svsam_rec
+forelength	graph.h	/^	uint32_t 		forelength;$/;"	m	class:RHashtable
+g_defr	ksw.c	/^const kswr_t g_defr = { 0, -1, -1, -1, -1, -1, -1 };$/;"	v
+gapextend	form.h	/^	int			gapextend;$/;"	m	struct:options
+gapopen	form.h	/^	int 		gapopen;$/;"	m	struct:options
+gen_sed	aligner.cpp	/^uint32_t Aligner::gen_sed(char *bases, uint32_t len_bases, uint32_t *_sed_rec)$/;"	f	class:Aligner
+genome	aligner.h	/^	char 		*genome;\/\/readable$/;"	m	class:Aligner
+getCurrentDateTime	genhash.cpp	/^const std::string getCurrentDateTime() {$/;"	f
+getCurrentDateTime	main.cpp	/^const std::string getCurrentDateTime() {$/;"	f
+h	ksw.c	/^	int32_t h, e;$/;"	m	struct:__anon5	file:
+hashdir	form.h	/^	char 		hashdir[PATH_LEN];$/;"	m	struct:options
+hashdir	formh.h	/^	char 		hashdir[PATH_LEN];$/;"	m	struct:options
+hashtab	aligner.h	/^	Hashtab 	*hashtab;\/\/readable$/;"	m	class:Aligner
+hit_limit	form.h	/^	uint16_t 	hit_limit;$/;"	m	struct:options
+hit_times	aligner.h	/^	uint16_t	hit_times;$/;"	m	struct:bucket2
+isrc	aligner.h	/^	bool		isrc;$/;"	m	struct:bucket2
+kmer_value	graph.h	/^	uint32_t 		*kmer_value;$/;"	m	class:RHashtable
+kroundup32	kseq.h	88;"	d
+ks_eof	kseq.h	46;"	d
+ks_rewind	kseq.h	47;"	d
+kstring_t	kseq.h	/^} kstring_t;$/;"	t	typeref:struct:__kstring_t
+ksw_align	ksw.c	/^kswr_t ksw_align(int qlen, uint8_t *query, int tlen, uint8_t *target, int m, const int8_t *mat, int gapo, int gape, int xtra, kswq_t **qry)$/;"	f
+ksw_align2	ksw.c	/^kswr_t ksw_align2(int qlen, uint8_t *query, int tlen, uint8_t *target, int m, const int8_t *mat, int o_del, int e_del, int o_ins, int e_ins, int xtra, kswq_t **qry)$/;"	f
+ksw_extend	ksw.c	/^int ksw_extend(int qlen, const uint8_t *query, int tlen, const uint8_t *target, int m, const int8_t *mat, int gapo, int gape, int w, int end_bonus, int zdrop, int h0, int *qle, int *tle, int *gtle, int *gscore, int *max_off)$/;"	f
+ksw_extend2	ksw.c	/^int ksw_extend2(int qlen, const uint8_t *query, int tlen, const uint8_t *target, int m, const int8_t *mat, int o_del, int e_del, int o_ins, int e_ins, int w, int end_bonus, int zdrop, int h0, int *_qle, int *_tle, int *_gtle, int *_gscore, int *_max_off)$/;"	f
+ksw_extend2_core	ksw.c	/^int ksw_extend2_core(int qlen, const uint8_t *query, int tlen, const uint8_t *target, int m, const int8_t *mat, int gapo, int gape, int w, int h0, int *_qle, int *_tle, int *n_cigar_, uint32_t **cigar_)$/;"	f
+ksw_extend_core	ksw.c	/^int ksw_extend_core(int qlen, const uint8_t *query, int tlen, const uint8_t *target, int m, const int8_t *mat, int gapo, int gape, int w, int h0, int *_qle, int *_tle, uint32_t **cigar_, int *n_cigar_)$/;"	f
+ksw_global	ksw.c	/^int ksw_global(int qlen, const uint8_t *query, int tlen, const uint8_t *target, int m, const int8_t *mat, int gapo, int gape, int w, int *n_cigar_, uint32_t **cigar_)$/;"	f
+ksw_global2	ksw.c	/^int ksw_global2(int qlen, const uint8_t *query, int tlen, const uint8_t *target, int m, const int8_t *mat, int o_del, int e_del, int o_ins, int e_ins, int w, int *n_cigar_, uint32_t **cigar_)$/;"	f
+ksw_i16	ksw.c	/^kswr_t ksw_i16(kswq_t *q, int tlen, const uint8_t *target, int _o_del, int _e_del, int _o_ins, int _e_ins, int xtra) \/\/ the first gap costs -(_o+_e)$/;"	f
+ksw_qinit	ksw.c	/^kswq_t *ksw_qinit(int size, int qlen, const uint8_t *query, int m, const int8_t *mat)$/;"	f
+ksw_u8	ksw.c	/^kswr_t ksw_u8(kswq_t *q, int tlen, const uint8_t *target, int _o_del, int _e_del, int _o_ins, int _e_ins, int xtra) \/\/ the first gap costs -(_o+_e)$/;"	f
+kswq_t	ksw.h	/^typedef struct _kswq_t kswq_t;$/;"	t	typeref:struct:_kswq_t
+kswr_t	ksw.h	/^} kswr_t;$/;"	t	typeref:struct:__anon6
+l	kseq.h	/^	size_t l, m, lr;$/;"	m	struct:__kstring_t
+lclip	graph.h	/^	uint16_t	lclip;$/;"	m	struct:svsam_rec
+left_seq	graph.h	/^	uint16_t 		*left_seq;$/;"	m	class:RHashtable
+left_time	graph.h	/^    uint16_t 		left_time;$/;"	m	class:ASeed
+len	graph.h	/^    uint16_t 		len;$/;"	m	class:vertex
+len_genome	aligner.h	/^	uint32_t 	len_genome;\/\/readable$/;"	m	class:Aligner
+len_limit	form.h	/^	uint32_t 	len_limit;$/;"	m	struct:options
+len_sed	form.h	/^	uint32_t 	len_sed;$/;"	m	struct:options
+len_sed	formh.h	/^	uint32_t 	len_sed;$/;"	m	struct:options
+len_sed	graph.h	/^	uint32_t 		len_sed;$/;"	m	class:RHashtable
+limitOfp2leftSeq	graph.h	/^	uint32_t 		limitOfp2leftSeq;$/;"	m	class:RHashtable
+livingSeed	graph.h	/^    vector<ASeed> 	livingSeed;$/;"	m	class:Graphic
+load_hashfile	hash.cpp	/^Hashtab *Hash::load_hashfile(char *path,uint32_t len_genome, uint32_t len_sed)$/;"	f	class:Hash
+long_options	form.cpp	/^struct option long_options[] = {$/;"	v	typeref:struct:option
+long_options	formh.cpp	/^struct option long_options[] = {$/;"	v	typeref:struct:option
+lr	kseq.h	/^	size_t l, m, lr;$/;"	m	struct:__kstring_t
+m	kseq.h	/^	size_t l, m, lr;$/;"	m	struct:__kstring_t
+main	genhash.cpp	/^int main(int argc, char *argv[])$/;"	f
+main	ksw.c	/^int main(int argc, char *argv[])$/;"	f
+main	main.cpp	/^int main(int argc, char *argv[])$/;"	f
+mat	aligner.h	/^	int8_t 		mat[25];$/;"	m	class:Aligner
+match	form.h	/^	int			match;$/;"	m	struct:options
+max	ksw.c	/^	uint8_t shift, mdiff, max, size;$/;"	m	struct:_kswq_t	file:
+mdiff	ksw.c	/^	uint8_t shift, mdiff, max, size;$/;"	m	struct:_kswq_t	file:
+mismatch	form.h	/^	int 		mismatch;$/;"	m	struct:options
+n_seqs	aligner.h	/^	int 		n_seqs;$/;"	m	struct:aux
+name	aligner.h	/^	char 	*name;$/;"	m	struct:__anon3
+name_len	aligner.h	/^	int 	name_len;$/;"	m	struct:__anon3
+node	graph.h	/^	vector<vertex> 	node;$/;"	m	class:Graphic
+operator <	aligner.h	/^	bool operator<(const bucket& r) const$/;"	f	struct:bucket
+operator <	aligner.h	/^	bool operator<(const bucket2 & r) const$/;"	f	struct:bucket2
+operator <	graph.h	/^    bool 	operator<(const ASeed &r) const { return read_seq < r.read_seq; }$/;"	f	class:ASeed
+operator <	graph.h	/^    bool 	operator<(const vertex &r) const { return read_seq < r.read_seq; }$/;"	f	class:vertex
+operator =	aligner.h	/^	bucket2 operator=(const bucket2 & r) $/;"	f	struct:bucket2
+operator =	graph.h	/^	struct sam_rec &	operator=(const struct sam_rec &r)  $/;"	f	struct:sam_rec
+operator =	graph.h	/^	struct svsam_rec &	operator=(const struct svsam_rec &r)  $/;"	f	struct:svsam_rec
+operator =	graph.h	/^    ASeed &	operator=(const ASeed &r)  { read_seq = r.read_seq; left_time = r.left_time; return *this;}$/;"	f	class:ASeed
+opt	aligner.h	/^	opts 		*opt;$/;"	m	struct:aux
+opt	aligner.h	/^	opts 		*opt;\/\/readable$/;"	m	class:Aligner
+opt	form.h	/^	opts *opt;$/;"	m	class:Form
+opt	formh.h	/^	opts *opt;$/;"	m	class:Form
+opt_parse	form.cpp	/^int Form::opt_parse(int argc, char *argv[], opts* opt)$/;"	f	class:Form
+opt_parse	formh.cpp	/^int Form::opt_parse(int argc, char *argv[], opts* opt)$/;"	f	class:Form
+options	form.h	/^typedef struct options {$/;"	s
+options	formh.h	/^typedef struct options {$/;"	s
+opts	form.h	/^}opts;$/;"	t	typeref:struct:options
+opts	formh.h	/^}opts;$/;"	t	typeref:struct:options
+p2leftSeq	graph.h	/^	uint16_t 		*p2leftSeq;$/;"	m	class:RHashtable
+p2seqNum	graph.h	/^	uint16_t 		*p2seqNum;$/;"	m	class:RHashtable
+pointer	hash.h	/^		uint32_t *pointer;$/;"	m	struct:__anon7
+pointer	whash.h	/^		uint32_t *pointer;$/;"	m	struct:__anon1
+pos	aligner.h	/^	uint32_t 	pos[20];\/\/write	$/;"	m	class:Aligner
+pos	graph.h	/^	uint32_t 	pos;$/;"	m	struct:sam_rec
+pos	graph.h	/^	uint32_t 	pos;$/;"	m	struct:svsam_rec
+preDealRef	readfl.cpp	/^void read_file::preDealRef(char *ref, uint32_t len_ref) $/;"	f	class:read_file
+preserved	aligner.h	/^	bkt2 		preserved[20];\/\/should be a defined number write$/;"	m	class:Aligner
+proCans	aligner.cpp	/^void Aligner::proCans(char *read, uint32_t lenRead, bool isRC, std::priority_queue<bkt2> &cansHeap,$/;"	f	class:Aligner
+produceSAM	aligner.cpp	/^int Aligner::produceSAM(SvSam_Rec *_svsams , int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *len)$/;"	f	class:Aligner
+prseq	graph.cpp	/^void prseq(char *str, int len, bool enter)$/;"	f
+push_cigar	ksw.c	/^static inline uint32_t *push_cigar(int *n_cigar, int *m_cigar, uint32_t *cigar, int op, int len)$/;"	f	file:
+qb	ksw.h	/^	int tb, qb; \/\/ target start and query start$/;"	m	struct:__anon6
+qe	ksw.h	/^	int te, qe; \/\/ target end and query end$/;"	m	struct:__anon6
+qlen	ksw.c	/^	int qlen, slen;$/;"	m	struct:_kswq_t	file:
+qp	ksw.c	/^	__m128i *qp, *H0, *H1, *E, *Hmax;$/;"	m	struct:_kswq_t	file:
+qual	aligner.h	/^	char	*qual;$/;"	m	struct:__anon3
+qual_len	aligner.h	/^	int 	qual_len;$/;"	m	struct:__anon3
+rclip	graph.h	/^	uint16_t 	rclip;$/;"	m	struct:svsam_rec
+read_end	graph.h	/^	uint16_t 	read_end;$/;"	m	struct:svsam_rec
+read_file	readfl.h	/^class read_file$/;"	c
+read_ref	readfl.cpp	/^char *read_file::read_ref(char *path,uint32_t *len_genome)$/;"	f	class:read_file
+read_ref	readfl.cpp	/^char *read_file::read_ref(char *path,uint32_t *len_genome, uint32_t *Start_pos, char **chrName,int *count_chrl)$/;"	f	class:read_file
+read_seq	aligner.cpp	/^int read_seq;$/;"	v
+read_seq	graph.h	/^    uint16_t		read_seq;$/;"	m	class:ASeed
+read_seq	graph.h	/^    uint16_t		read_seq;$/;"	m	class:vertex
+read_start	graph.h	/^	uint16_t	read_start;$/;"	m	struct:svsam_rec
+readpath	form.h	/^	char 		readpath[PATH_LEN];$/;"	m	struct:options
+readqry	graph.h	/^    uint8_t			readqry[1024];$/;"	m	class:Graphic
+ref_end	graph.h	/^	uint32_t 	ref_end;$/;"	m	struct:svsam_rec
+ref_seq	graph.h	/^    uint16_t 		ref_seq;$/;"	m	class:vertex
+ref_start	graph.h	/^	uint32_t 	ref_start;$/;"	m	struct:svsam_rec
+refpath	form.h	/^	char 		refpath[PATH_LEN];$/;"	m	struct:options
+refpath	formh.h	/^	char 		refpath[PATH_LEN];$/;"	m	struct:options
+refqry	graph.h	/^    uint8_t 		refqry[1024];$/;"	m	class:Graphic
+rev	aligner.cpp	/^uint8_t rev[128]={$/;"	v
+revreadqry	graph.h	/^   	char 			revreadqry[1024];$/;"	m	class:Graphic
+revrefqry	graph.h	/^   	char 			revrefqry[1024];$/;"	m	class:Graphic
+revseq	ksw.c	/^static inline void revseq(int l, uint8_t *s)$/;"	f	file:
+revstr	graph.cpp	/^void 	Graphic::revstr(uint8_t *revstring, char *string, int len)$/;"	f	class:Graphic
+rh_seed_len	form.h	/^	uint32_t 	rh_seed_len;$/;"	m	struct:options
+rhashtab	aligner.h	/^	RHashtable 		*rhashtab;$/;"	m	struct:__anon4
+rhat_seq	aligner.h	/^}rhat_seq;$/;"	t	typeref:struct:__anon3
+rhat_seq_read	aligner.cpp	/^int Aligner::rhat_seq_read(kstream_t *_fp, kseq_t *_seqs, int n_needed)$/;"	f	class:Aligner
+rrhashtab	aligner.h	/^	RHashtable 		*rrhashtab;$/;"	m	struct:__anon4
+rs	kseq.h	/^	char *rs;$/;"	m	struct:__kstring_t
+rseq	aligner.h	/^	char 	*rseq;$/;"	m	struct:__anon3
+rwlock	aligner.cpp	/^pthread_rwlock_t rwlock;$/;"	v
+s	kseq.h	/^	char *s;$/;"	m	struct:__kstring_t
+sam_details	aligner.h	/^	uint8_t 	*sam_details;\/\/ H:6 samamount L:2 isSAM, bits set by limit of read length might be changed in future$/;"	m	struct:aux
+sam_rec	graph.h	/^typedef struct sam_rec{$/;"	s
+sams	aligner.h	/^	Sam_Rec		*sams;$/;"	m	struct:aux
+score	graph.h	/^	int 		score;$/;"	m	struct:sam_rec
+score	graph.h	/^	int 		score;$/;"	m	struct:svsam_rec
+score	ksw.h	/^	int score; \/\/ best score$/;"	m	struct:__anon6
+score2	ksw.h	/^	int score2, te2; \/\/ second best score and ending position on the target$/;"	m	struct:__anon6
+sed_bkt_pos	hash.h	/^		uint32_t sed_bkt_pos;$/;"	m	struct:__anon8
+sed_bkt_pos	whash.h	/^		uint32_t sed_bkt_pos;$/;"	m	struct:__anon2
+sed_hit_times	aligner.h	/^	uint16_t 		*sed_hit_times;$/;"	m	struct:__anon4
+sed_hit_times	aligner.h	/^	uint16_t 		*sed_hit_times;\/\/use malloc$/;"	m	class:Aligner
+sed_rec	aligner.h	/^	uint32_t		*sed_rec;$/;"	m	struct:__anon4
+sed_rec	aligner.h	/^	uint32_t 		*sed_rec;\/\/len_bases -14] ;\/\/use malloc();$/;"	m	class:Aligner
+sed_value	hash.h	/^		uint32_t sed_value;$/;"	m	struct:__anon8
+sed_value	whash.h	/^		uint32_t sed_value;$/;"	m	struct:__anon2
+seed	hash.h	/^	}seed;$/;"	t	typeref:struct:__anon8
+seed	whash.h	/^	}seed;$/;"	t	typeref:struct:__anon2
+seq	aligner.h	/^	char   	*seq;$/;"	m	struct:__anon3
+seq_bkt	hash.h	/^		uint32_t *seq_bkt;$/;"	m	struct:__anon7
+seq_bkt	whash.h	/^		uint32_t *seq_bkt;$/;"	m	struct:__anon1
+seq_len	aligner.h	/^	int 	seq_len;$/;"	m	struct:__anon3
+seq_nt4_tablet	graph.cpp	/^const uint8_t seq_nt4_tablet[256] = {$/;"	v
+seq_num	aligner.h	/^	uint32_t 	seq_num;$/;"	m	struct:bucket2
+seq_num	graph.h	/^	uint16_t  		*seq_num;$/;"	m	class:RHashtable
+seqs	aligner.h	/^	kseq_t 		*seqs;$/;"	m	struct:aux
+sequence_num_bkt	aligner.h	/^	uint32_t 		sequence_num_bkt;\/\/ also don't know how many$/;"	m	struct:bucket
+shift	ksw.c	/^	uint8_t shift, mdiff, max, size;$/;"	m	struct:_kswq_t	file:
+short_options	form.cpp	/^char *const short_options = "w:m:k:a:b:q:r:t:h";$/;"	v
+short_options	formh.cpp	/^char *const short_options = "k:h";$/;"	v
+size	ksw.c	/^	uint8_t shift, mdiff, max, size;$/;"	m	struct:_kswq_t	file:
+slen	ksw.c	/^	int qlen, slen;$/;"	m	struct:_kswq_t	file:
+sort_sed	aligner.cpp	/^void Aligner::sort_sed(uint32_t *_sed_rec,uint32_t usedseed)$/;"	f	class:Aligner
+stat_sed	aligner.cpp	/^void  Aligner::stat_sed(uint32_t *_sed_rec, uint16_t *_sed_hit_times, uint16_t *_unused_bkt, uint32_t usedseed)$/;"	f	class:Aligner
+statsed	hash.cpp	/^uint32_t statsed(seed *repsed,uint32_t len)$/;"	f
+statsed	whash.cpp	/^uint32_t statsed(seed *repsed,uint32_t len)$/;"	f
+svsam_rec	graph.h	/^typedef struct svsam_rec {$/;"	s
+svsams	aligner.h	/^	SvSam_Rec	**svsams;$/;"	m	struct:aux
+tb	ksw.h	/^	int tb, qb; \/\/ target start and query start$/;"	m	struct:__anon6
+te	ksw.h	/^	int te, qe; \/\/ target end and query end$/;"	m	struct:__anon6
+te2	ksw.h	/^	int score2, te2; \/\/ second best score and ending position on the target$/;"	m	struct:__anon6
+thread	form.h	/^	int 		thread;$/;"	m	struct:options
+thread_aux	aligner.h	/^}thread_aux;$/;"	t	typeref:struct:aux
+thread_initiate	aligner.cpp	/^thread_aux *thread_initiate(int n_thread, RHashtable **rhashtab, RHashtable **rrhashtab, uint32_t *sed_rec, uint16_t *sed_hit_times,$/;"	f
+thread_worker	aligner.cpp	/^static void *thread_worker(void *data)$/;"	f	file:
+tid	aligner.h	/^	int 		tid;$/;"	m	struct:aux
+transIntoDec	aligner.cpp	/^int 	transIntoDec(uint8_t *transtr,char *str,int length)$/;"	f
+transIntoDec	graph.cpp	/^int 	Graphic::transIntoDec(uint8_t *transtr,char *str, int length)$/;"	f	class:Graphic
+transTable	graph.cpp	/^uint8_t transTable[] = {$/;"	v
+transfer	hash.cpp	/^int transfer(char *genome,uint32_t *l2r,uint32_t len_sed)$/;"	f
+transfer	whash.cpp	/^int transfer(char *genome,uint32_t *l2r,uint32_t len_sed)$/;"	f
+unused_bkt	aligner.h	/^	uint16_t		*unused_bkt;$/;"	m	struct:__anon4
+unused_bkt	aligner.h	/^	uint16_t 		*unused_bkt;$/;"	m	class:Aligner
+usage	form.cpp	/^int Form::usage()$/;"	f	class:Form
+usage	formh.cpp	/^int Form::usage()$/;"	f	class:Form
+vertex	graph.h	/^class vertex{$/;"	c
+waitingLen	form.h	/^	uint32_t 	waitingLen;$/;"	m	struct:options
+write_hashfile	whash.cpp	/^int Hash::write_hashfile(char *path,char *genome,uint32_t len_genome, uint32_t len_sed)$/;"	f	class:Hash
+~Aligner	aligner.cpp	/^Aligner::~Aligner()$/;"	f	class:Aligner
+~RHashtable	graph.cpp	/^RHashtable::~RHashtable()$/;"	f	class:RHashtable
