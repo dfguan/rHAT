@@ -1050,9 +1050,9 @@ static void *thread_worker(void *data)
 					aux->svsams[_read_seq] = new SvSam_Rec[aux->opt->canN *(aux->opt->len_limit/LEN_BASES + 1)];
 					aux->sam_details[_read_seq] = aux->aln->applySV(aux->seqs+_read_seq,aux->com_var.rhashtab, aux->com_var.rrhashtab, aux->svsams[_read_seq], aux->com_var.sed_rec, aux->com_var.sed_hit_times, aux->com_var.unused_bkt);
 				if (aux->sam_details[_read_seq])
-					aux->sam_details[_read_seq] = aux->sam_details[_read_seq] << 2 | 2;
+					aux->sam_details[_read_seq] = aux->sam_details[_read_seq] << 1;
 			} else
-				aux->sam_details[_read_seq] = aux->sam_details[_read_seq] << 2 | 1;		
+				aux->sam_details[_read_seq] = aux->sam_details[_read_seq] << 1 | 1;		
 		} else break;	
 	}
 	//return 0;
