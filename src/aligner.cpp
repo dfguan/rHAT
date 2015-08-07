@@ -1119,7 +1119,7 @@ void Aligner::Runtask()
 
 			uint16_t sam_details = applyNonSV(seqs, rhashtab, rrhashtab, sams, sed_rec, sed_hit_times, unused_bkt);
 
-			if (!sam_details) {
+			if (!sam_details && !(seqs->seq.l < LEN_BASES)) {
 
 				sam_details = applySV(seqs, rhashtab, rrhashtab, svsams, sed_rec, sed_hit_times, unused_bkt);
 
