@@ -132,9 +132,11 @@ private:
     uint8_t 		refqry[1024];
    	char 			revreadqry[1024];
    	char 			revrefqry[1024];
-   	
+   	char 			*ref_s;
+   	char 			*ref_t;
     
 public:
+			Graphic(char *_ref_s, char *_ref_e) ;
 	int 	applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen, uint32_t left_start,
 		bool rc, uint32_t *startPos, char **chrName, int countChr,Sam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape);
 	int 	applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen, uint32_t left_start,

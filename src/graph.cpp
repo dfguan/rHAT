@@ -250,7 +250,11 @@ uint16_t binsearchPos(uint16_t sval,uint16_t low,uint16_t high,uint16_t *bkt)
   }
   return low;
 }
-
+Graphic::Graphic(char *_ref_s, char *_ref_e) 
+{
+	ref_s = _ref_s;
+	ref_t = _ref_e;
+}
 int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen,
  uint32_t left_start,bool rc, uint32_t *startPos, char **chrName, int countChr, Sam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape)
 {
@@ -681,7 +685,12 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	const 	uint8_t *refqry_;
 
 	int read_len 	= 	node[order[order_len-1]].read_seq;
-	int ref_len 	=	read_len;
+	//figure out ref_len
+	int ref_len 	= read_len;
+	
+	
+	
+
 
 
 	uint8_t  ind;
@@ -691,15 +700,19 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	// 	 h0 = 0;
 	if (read_len != 0) {
 
+
 		//prseq(read,read_len,true);
 
 		//char headbuf[(WAITINGLEN<<1)+1];
 		revstr(readqry,read,read_len);
 		//prseq(read,read_len,true);
 		//transIntoDec(readqry,revreadqry,read_len);
-		refStartP = ref + node[order[order_len-1]].ref_seq - read_len;
+		//refStartP = ref + node[order[order_len-1]].ref_seq - read_len;
 		//prseq(refStartP,read_len,true);
-		revstr(refqry,refStartP,read_len);
+		refStartP 		= 	ref + node[order[order_len-1]].ref_seq - read_len;
+		if (refStartP < ref_s) { refStartP = ref_s; ref_len = left_start;}
+
+		revstr(refqry,refStartP,ref_len);
 		//cout<<node[order[order_len-1]].ref_seq;
 		//prseq(refStartP,read_len,true);
 		//transIntoDec(refqry,revrefqry,read_len);
@@ -845,13 +858,17 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//cout<<"\t"<<score<<'\t'<<"5"<<endl;
 	readStartP = read + node[order[1]].read_seq + node[order[1]].len;
 	refStartP = ref + node[order[1]].ref_seq + node[order[1]].len;
+
 	read_len = totalReadlen - (node[order[1]].read_seq + node[order[1]].len);
-	ref_len = read_len;//may be discussed later
+	//may be discussed later
 	qlen = 0;
 	tlen = 0;
 
 	if (0 != read_len) { // if without else may be it will display previous cigar {
 		transIntoDec(readqry,readStartP,read_len);
+
+		ref_len = refStartP + read_len - 1 > ref_t? ref_t - refStartP + 1: read_len;
+
 		transIntoDec(refqry,refStartP,ref_len);
 
 		readqry_ = readqry;
@@ -917,7 +934,8 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	const 	uint8_t *refqry_;
 
 	int read_len 	= 	node[order[order_len-1]].read_seq;
-	int ref_len 	=	read_len;
+	int ref_len		= 	read_len;
+	
 
 
 	uint8_t  ind;
@@ -935,8 +953,9 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		//prseq(read,read_len,true);
 		//transIntoDec(readqry,revreadqry,read_len);
 		refStartP = ref + node[order[order_len-1]].ref_seq - read_len;
+		if (refStartP < ref_s) { refStartP = ref_s; ref_len = left_start;}
 		//prseq(refStartP,read_len,true);
-		revstr(refqry,refStartP,read_len);
+		revstr(refqry,refStartP,ref_len);
 		//cout<<node[order[order_len-1]].ref_seq;
 		//prseq(refStartP,read_len,true);
 		//transIntoDec(refqry,revrefqry,read_len);
@@ -1088,9 +1107,12 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	readStartP = read + node[order[1]].read_seq + node[order[1]].len;
 	refStartP = ref + node[order[1]].ref_seq + node[order[1]].len;
 	read_len = totalReadlen - (node[order[1]].read_seq + node[order[1]].len);
-	ref_len = read_len;//may be discussed later
+	//may be discussed later
 	if (0 != read_len) { // if without else may be it will display previous cigar {
 		transIntoDec(readqry,readStartP,read_len);
+
+		ref_len = refStartP + read_len - 1 > ref_t? ref_t - refStartP + 1 : read_len;
+
 		transIntoDec(refqry,refStartP,ref_len);
 
 		readqry_ = readqry;

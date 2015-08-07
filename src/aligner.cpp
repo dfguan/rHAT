@@ -372,7 +372,7 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 	for (uint32_t i=0; i< opt->canN&&!cansHeap.empty();++i) {
 		preserved[usedArray++] = cansHeap.top();
 
-		Graphic 		gra;
+		Graphic 		gra(genome, genome_e);
 		seq_num_temp = cansHeap.top().seq_num;
 		rc = cansHeap.top().isrc;
 
@@ -418,7 +418,7 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 		extendWaitingLen = true;
 		//recuculate extending waiting length
 		for (int i=0;i<usedArray;++i) {
-			Graphic 		gra;
+			Graphic 		gra(genome, genome_e);
 			seq_num_temp = preserved[i].seq_num;
 			rc = preserved[i].isrc;
 
@@ -520,7 +520,7 @@ int Aligner::OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint1
 			if (_sam_details[i]) {
 				int countSam = _sam_details[i] >> 1;
 				trunk = _seqs + i;
-				if (_sam_details[i] & 1) {
+				if (_sam_details[i]&1) {
 					Sam_Rec *nonSv = _sams + i * opt->canN;
 					for (int j=0; j< countSam; ++j) {
 						if (trunk->qual.s == NULL)// this might happend so qual is wrong?
@@ -602,7 +602,7 @@ int Aligner::conductAlign(kseq_t *trunk, char *read, char *rcRead, int lenRead, 
 	for (uint32_t i=0; i< opt->canN&&!cansHeap.empty();++i) {
 		preserved[usedArray++] = cansHeap.top();
 
-		Graphic 		gra;
+		Graphic 		gra(genome, genome_e);
 		seq_num_temp = cansHeap.top().seq_num;
 		rc = cansHeap.top().isrc;
 
@@ -927,7 +927,7 @@ int Aligner::applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab,
 	//split into several pieces
 	//
 	std::priority_queue<bkt2> 	cansHeap;
-	int  pNumber = trunk->seq.l/LEN_BASES;
+	uint32_t pNumber = trunk->seq.l/LEN_BASES;
 	uint32_t leftLen = LEN_BASES + trunk->seq.l - pNumber*LEN_BASES;
 	//if (leftLen) ++pNumber;
 	// produce the
@@ -937,7 +937,7 @@ int Aligner::applySV(kseq_t *trunk, RHashtable *rhashtab, RHashtable *rrhashtab,
 
 	bkt_index[0] = 0;
 	len[0] = 0;
-	for (int i=0;i<pNumber -1;++i) len[i+1] = len[i] + LEN_BASES;
+	for (uint32_t i=0;i<pNumber -1;++i) len[i+1] = len[i] + LEN_BASES;
 	len[pNumber] = len[pNumber-1] + leftLen;
 
 	char *useread;
@@ -1077,7 +1077,7 @@ void Aligner::Runtask()
 		fprintf(stderr,"Fail to load Genome reference, now exit");
 		exit(1);
 	}
-
+	genome_e = genome + len_genome - 1;
 	//output header
 	cout<<"@HD\tVN:"<<PACKAGE_VERSION<<endl;
 	for (int i=1;i<countChr;++i) {cout<<"@SQ\tSN:"<<ChrName[i]<<"\tLN:"<<Start_pos[i]-Start_pos[i-1]<<endl;}
@@ -1119,7 +1119,7 @@ void Aligner::Runtask()
 
 			uint16_t sam_details = applyNonSV(seqs, rhashtab, rrhashtab, sams, sed_rec, sed_hit_times, unused_bkt);
 
-			if (!sam_details && !(seqs->seq.l < LEN_BASES)) {
+			if (!sam_details) {
 
 				sam_details = applySV(seqs, rhashtab, rrhashtab, svsams, sed_rec, sed_hit_times, unused_bkt);
 
