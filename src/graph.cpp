@@ -680,6 +680,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//uint32_t endpos = node[order[1]].ref_seq + node[order[1]].len;
 	uint32_t startpos;
 	int w;
+	uint32_t countM = 0;
 	const 	char 	correspondTable[] = "MIDNSHP=X";
 	const 	uint8_t *readqry_;
 	const 	uint8_t *refqry_;
@@ -756,14 +757,25 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//cout<<endl;
 	int startPosCigar = 0;
 	sams[countSam].read_start = read_len - qlen;
-	for (int z=n_cigar-1;z>=0;--z) {
-		//cout<<(cigar[z]>>4)<<correspondTable[cigar[z]&0xf];
-		startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-		sams[countSam].cigar.append(trans_cigar);
-		//++startPosCigar;
-	}
-	if (n_cigar != 0 ) free(cigar);
+	
 
+	if (n_cigar) {
+		for (int z=n_cigar-1;z>0;--z) {
+			//cout<<(cigar[z]>>4)<<correspondTable[cigar[z]&0xf];
+			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+			sams[countSam].cigar.append(trans_cigar);
+			//++startPosCigar;
+		}
+
+		if (correspondTable[cigar[0]&0xf] == 'M')
+			countM = cigar[0] >> 4;
+		else {
+			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[0]>>4,correspondTable[cigar[0]&0xf]);
+			sams[countSam].cigar.append(trans_cigar);
+		}
+
+		free(cigar);
+	}
 	//if (n_cigar!=0) free(cigar);
 	//deal with middle part
 
@@ -778,8 +790,9 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		//cigarbuflen -= (stringLen + 1);
 		//cigarStartP += 1;
 		//cout<<node[order[i]].len<<'M';
-		startPosCigar += sprintf(trans_cigar, "%uM",node[order[i]].len);
-		sams[countSam].cigar.append(trans_cigar);
+		
+		countM += node[order[i]].len;
+
 		//sams[countSam]._cigar[startPosCigar] = 'M';
 		//++startPosCigar;
 		//deal with different one
@@ -790,6 +803,10 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		read_len = node[order[i-1]].read_seq - (node[order[i]].read_seq + node[order[i]].len);
 		ref_len = node[order[i-1]].ref_seq - (node[order[i]].ref_seq + node[order[i]].len);
 		if ( 0 == read_len || 0 == ref_len) {
+			//stick 'M' first
+			startPosCigar += sprintf(trans_cigar, "%uM",countM);
+			sams[countSam].cigar.append(trans_cigar);
+			countM = 0;
 			if (0 != read_len) {
 
 				//stringLen = sprintf(cigarStartP,"%d",read_len);
@@ -829,13 +846,47 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 			sams[countSam].score += ksw_global(read_len,readqry_,ref_len,refqry_,5,mat,gapo,gape,w,&n_cigar,&cigar);
 
 			//fprintf(stderr,"%d %d %d %d %d %d\n",order[i-1],order[i],read_len,ref_len,score, n_cigar);
-			for (int z=0;z<n_cigar;++z) {
-				startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-				//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
-				//++startPosCigar;
-				sams[countSam].cigar.append(trans_cigar);
+			//first cigar[0] is M
+			if (n_cigar-1) {
+				if (correspondTable[cigar[0]&0xf] == 'M') {
+					countM += (cigar[0] >> 4);
+					startPosCigar += sprintf(trans_cigar,"%uM",countM);
+					sams[countSam].cigar.append(trans_cigar);
+				} else {
+					startPosCigar += sprintf(trans_cigar,"%uM",countM);
+					sams[countSam].cigar.append(trans_cigar);
+					startPosCigar += sprintf(trans_cigar,"%u%c",cigar[0]>>4,correspondTable[cigar[0]&0xf]);
+					sams[countSam].cigar.append(trans_cigar);
+				}
+				countM = 0;
+				for (int z=1;z<n_cigar-1;++z) {
+					startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+					//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
+					//++startPosCigar;
+					sams[countSam].cigar.append(trans_cigar);
+				}
+
+				if (correspondTable[cigar[n_cigar-1]&0xf] == 'M') {
+					countM = cigar[n_cigar-1] >> 4;
+					//startPosCigar += sprintf(trans_cigar,"%u%c",countM,'M');
+					//sams[countSam].cigar.append(trans_cigar);
+				} else {
+					startPosCigar += sprintf(trans_cigar,"%u%c",cigar[n_cigar-1]>>4,correspondTable[cigar[n_cigar-1]&0xf]);
+					sams[countSam].cigar.append(trans_cigar);
+				}
+
+			} else {
+				if (correspondTable[cigar[0]&0xf] == 'M') 
+					countM += (cigar[0] >> 4);
+				else {
+					startPosCigar += sprintf(trans_cigar,"%uM",countM);
+					sams[countSam].cigar.append(trans_cigar);
+					startPosCigar += sprintf(trans_cigar,"%u%c",cigar[0]>>4,correspondTable[cigar[0]&0xf]);
+					sams[countSam].cigar.append(trans_cigar);
+					countM = 0;
+
+				}
 			}
-			//cout<<temp<<"\t"<<score<<'\t'<<"4"<<endl;
 			free(cigar);
 			//cigarbuflen -= usedCigarsize;
 			//cigarStartP += usedCigarsize;
@@ -850,10 +901,12 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//cigarbuflen -= (stringLen + 1);
 	//cigarStartP += 1;
 	//cout<<node[order[1]].len<<'M';
-	startPosCigar += sprintf(trans_cigar, "%uM",node[order[1]].len);
+	//startPosCigar += sprintf(trans_cigar, "%uM",node[order[1]].len);
 	//sams[countSam]._cigar[startPosCigar] = 'M';
 	//++startPosCigar;
-	sams[countSam].cigar.append(trans_cigar);
+	//sams[countSam].cigar.append(trans_cigar);
+	countM += node[order[1]].len;
+
 	sams[countSam].score += node[order[1]].len;
 	//cout<<"\t"<<score<<'\t'<<"5"<<endl;
 	readStartP = read + node[order[1]].read_seq + node[order[1]].len;
@@ -877,19 +930,30 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		sams[countSam].score = ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len , &qlen, &tlen, &cigar, &n_cigar) - read_len;
 		//score += ksw_global(read_len,readStartP,ref_len,refStartP,5,mat,GAPOPEN,GAPEXTENDED,read_len,&n_cigar,&cigar);
 		//fprintf(stderr,"%d\n",score);
-		for (int z=0;z<n_cigar;++z) {
-			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-			sams[countSam].cigar.append(trans_cigar);
-
-			//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
-			//++startPosCigar;
-		}
-		free(cigar);
+		
 		//endpos = node[order[1]].ref_seq + node[order[1]].len + tlen;
 		//cout<<"\t"<<score<<'\t'<<"6"<<endl;
-	}
+	} 
 	//cout<<endl<<score<<endl;
-
+	if (n_cigar) {
+		if (correspondTable[cigar[0]&0xf] == 'M') {
+			countM += (cigar[0] >> 4);
+			startPosCigar += sprintf(trans_cigar,"%uM",countM);
+			sams[countSam].cigar.append(trans_cigar);
+		} else {
+			startPosCigar += sprintf(trans_cigar,"%uM",countM);
+			sams[countSam].cigar.append(trans_cigar);
+			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[0]>>4,correspondTable[cigar[0]&0xf]);
+			sams[countSam].cigar.append(trans_cigar);
+		}
+		for (int z=1;z<n_cigar;++z) {
+			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+			sams[countSam].cigar.append(trans_cigar);
+		}
+	} else {
+			startPosCigar += sprintf(trans_cigar,"%uM",countM);
+			sams[countSam].cigar.append(trans_cigar);
+	}
 	//sams[countSam]._cigar[startPosCigar] = '\0';
 	sams[countSam].ref_end = chrstartPos + node[order[1]].ref_seq + node[order[1]].len + tlen;
 	sams[countSam].read_end = node[order[1]].read_seq + node[order[1]].len + qlen;
@@ -932,7 +996,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	const 	char 	correspondTable[] = "MIDNSHP=X";
 	const 	uint8_t *readqry_;
 	const 	uint8_t *refqry_;
-
+    uint32_t  countM = 0;
 	int read_len 	= 	node[order[order_len-1]].read_seq;
 	int ref_len		= 	read_len;
 	
@@ -1004,14 +1068,23 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		sams[countSam].cigar.append(trans_cigar);
 	}// proves that softclipings do exist
 
-	for (int z=n_cigar-1;z>=0;--z) {
-		//cout<<(cigar[z]>>4)<<correspondTable[cigar[z]&0xf];
-		startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-		sams[countSam].cigar.append(trans_cigar);
-		//++startPosCigar;
-	}
-	if (n_cigar != 0 ) free(cigar);
+	if (n_cigar) {
+		for (int z=n_cigar-1;z>0;--z) {
+			//cout<<(cigar[z]>>4)<<correspondTable[cigar[z]&0xf];
+			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+			sams[countSam].cigar.append(trans_cigar);
+			//++startPosCigar;
+		}
 
+		if (correspondTable[cigar[0]&0xf] == 'M')
+			countM = cigar[0] >> 4;
+		else {
+			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[0]>>4,correspondTable[cigar[0]&0xf]);
+			sams[countSam].cigar.append(trans_cigar);
+		}
+
+		free(cigar);
+	}
 	//if (n_cigar!=0) free(cigar);
 	//deal with middle part
 
@@ -1026,8 +1099,9 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		//cigarbuflen -= (stringLen + 1);
 		//cigarStartP += 1;
 		//cout<<node[order[i]].len<<'M';
-		startPosCigar += sprintf(trans_cigar, "%uM",node[order[i]].len);
-		sams[countSam].cigar.append(trans_cigar);
+		
+		countM += node[order[i]].len;
+
 		//sams[countSam]._cigar[startPosCigar] = 'M';
 		//++startPosCigar;
 		//deal with different one
@@ -1038,6 +1112,10 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		read_len = node[order[i-1]].read_seq - (node[order[i]].read_seq + node[order[i]].len);
 		ref_len = node[order[i-1]].ref_seq - (node[order[i]].ref_seq + node[order[i]].len);
 		if ( 0 == read_len || 0 == ref_len) {
+			//stick 'M' first
+			startPosCigar += sprintf(trans_cigar, "%uM",countM);
+			sams[countSam].cigar.append(trans_cigar);
+			countM = 0;
 			if (0 != read_len) {
 
 				//stringLen = sprintf(cigarStartP,"%d",read_len);
@@ -1077,13 +1155,47 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 			sams[countSam].score += ksw_global(read_len,readqry_,ref_len,refqry_,5,mat,gapo,gape,w,&n_cigar,&cigar);
 
 			//fprintf(stderr,"%d %d %d %d %d %d\n",order[i-1],order[i],read_len,ref_len,score, n_cigar);
-			for (int z=0;z<n_cigar;++z) {
-				startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-				//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
-				//++startPosCigar;
-				sams[countSam].cigar.append(trans_cigar);
+			//first cigar[0] is M
+			if (n_cigar-1) {
+				if (correspondTable[cigar[0]&0xf] == 'M') {
+					countM += (cigar[0] >> 4);
+					startPosCigar += sprintf(trans_cigar,"%uM",countM);
+					sams[countSam].cigar.append(trans_cigar);
+				} else {
+					startPosCigar += sprintf(trans_cigar,"%uM",countM);
+					sams[countSam].cigar.append(trans_cigar);
+					startPosCigar += sprintf(trans_cigar,"%u%c",cigar[0]>>4,correspondTable[cigar[0]&0xf]);
+					sams[countSam].cigar.append(trans_cigar);
+				}
+				countM = 0;
+				for (int z=1;z<n_cigar-1;++z) {
+					startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+					//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
+					//++startPosCigar;
+					sams[countSam].cigar.append(trans_cigar);
+				}
+
+				if (correspondTable[cigar[n_cigar-1]&0xf] == 'M') {
+					countM = cigar[n_cigar-1] >> 4;
+					//startPosCigar += sprintf(trans_cigar,"%u%c",countM,'M');
+					//sams[countSam].cigar.append(trans_cigar);
+				} else {
+					startPosCigar += sprintf(trans_cigar,"%u%c",cigar[n_cigar-1]>>4,correspondTable[cigar[n_cigar-1]&0xf]);
+					sams[countSam].cigar.append(trans_cigar);
+				}
+
+			} else {
+				if (correspondTable[cigar[0]&0xf] == 'M') 
+					countM += (cigar[0] >> 4);
+				else {
+					startPosCigar += sprintf(trans_cigar,"%uM",countM);
+					sams[countSam].cigar.append(trans_cigar);
+					startPosCigar += sprintf(trans_cigar,"%u%c",cigar[0]>>4,correspondTable[cigar[0]&0xf]);
+					sams[countSam].cigar.append(trans_cigar);
+					countM = 0;
+
+				}
 			}
-			//cout<<temp<<"\t"<<score<<'\t'<<"4"<<endl;
 			free(cigar);
 			//cigarbuflen -= usedCigarsize;
 			//cigarStartP += usedCigarsize;
@@ -1098,44 +1210,63 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//cigarbuflen -= (stringLen + 1);
 	//cigarStartP += 1;
 	//cout<<node[order[1]].len<<'M';
-	startPosCigar += sprintf(trans_cigar, "%uM",node[order[1]].len);
+	//startPosCigar += sprintf(trans_cigar, "%uM",node[order[1]].len);
 	//sams[countSam]._cigar[startPosCigar] = 'M';
 	//++startPosCigar;
-	sams[countSam].cigar.append(trans_cigar);
+	//sams[countSam].cigar.append(trans_cigar);
+	countM += node[order[1]].len;
+
 	sams[countSam].score += node[order[1]].len;
 	//cout<<"\t"<<score<<'\t'<<"5"<<endl;
 	readStartP = read + node[order[1]].read_seq + node[order[1]].len;
 	refStartP = ref + node[order[1]].ref_seq + node[order[1]].len;
+
 	read_len = totalReadlen - (node[order[1]].read_seq + node[order[1]].len);
 	//may be discussed later
+	qlen = 0;
+	tlen = 0;
+
 	if (0 != read_len) { // if without else may be it will display previous cigar {
 		transIntoDec(readqry,readStartP,read_len);
 
-		ref_len = refStartP + read_len - 1 > ref_t? ref_t - refStartP + 1 : read_len;
+		ref_len = refStartP + read_len - 1 > ref_t? ref_t - refStartP + 1: read_len;
 
 		transIntoDec(refqry,refStartP,ref_len);
 
 		readqry_ = readqry;
 		refqry_ = refqry;
 
-		sams[countSam].score = ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len, &qlen, &tlen, &cigar,  &n_cigar) - read_len;
+		sams[countSam].score = ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len , &qlen, &tlen, &cigar, &n_cigar) - read_len;
 		//score += ksw_global(read_len,readStartP,ref_len,refStartP,5,mat,GAPOPEN,GAPEXTENDED,read_len,&n_cigar,&cigar);
 		//fprintf(stderr,"%d\n",score);
-		for (int z=0;z<n_cigar;++z) {
-			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-			sams[countSam].cigar.append(trans_cigar);
-
-			//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
-			//++startPosCigar;
-		}
-		if (qlen != read_len) {
-			startPosCigar += sprintf(trans_cigar, "%uS", read_len - qlen);
-			sams[countSam].cigar.append(trans_cigar);
-		}
-
-		free(cigar);
+		
 		//endpos = node[order[1]].ref_seq + node[order[1]].len + tlen;
 		//cout<<"\t"<<score<<'\t'<<"6"<<endl;
+	} 
+	//cout<<endl<<score<<endl;
+	if (n_cigar) {
+		if (correspondTable[cigar[0]&0xf] == 'M') {
+			countM += (cigar[0] >> 4);
+			startPosCigar += sprintf(trans_cigar,"%uM",countM);
+			sams[countSam].cigar.append(trans_cigar);
+		} else {
+			startPosCigar += sprintf(trans_cigar,"%uM",countM);
+			sams[countSam].cigar.append(trans_cigar);
+			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[0]>>4,correspondTable[cigar[0]&0xf]);
+			sams[countSam].cigar.append(trans_cigar);
+		}
+		for (int z=1;z<n_cigar;++z) {
+			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+			sams[countSam].cigar.append(trans_cigar);
+		}
+	} else {
+			startPosCigar += sprintf(trans_cigar,"%uM",countM);
+			sams[countSam].cigar.append(trans_cigar);
+	}
+
+	if (qlen != read_len) {
+		startPosCigar += sprintf(trans_cigar, "%uS", read_len - qlen);
+		sams[countSam].cigar.append(trans_cigar);
 	}
 	//cout<<endl<<score<<endl;
 	
