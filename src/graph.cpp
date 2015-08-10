@@ -950,6 +950,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
 			sams[countSam].cigar.append(trans_cigar);
 		}
+		free(cigar);
 	} else {
 			startPosCigar += sprintf(trans_cigar,"%uM",countM);
 			sams[countSam].cigar.append(trans_cigar);
@@ -1259,6 +1260,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 			startPosCigar += sprintf(trans_cigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
 			sams[countSam].cigar.append(trans_cigar);
 		}
+		free(cigar);
 	} else {
 			startPosCigar += sprintf(trans_cigar,"%uM",countM);
 			sams[countSam].cigar.append(trans_cigar);
