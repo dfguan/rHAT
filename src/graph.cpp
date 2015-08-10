@@ -916,7 +916,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//may be discussed later
 	qlen = 0;
 	tlen = 0;
-
+	n_cigar = 0;
 	if (0 != read_len) { // if without else may be it will display previous cigar {
 		transIntoDec(readqry,readStartP,read_len);
 
@@ -1225,7 +1225,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//may be discussed later
 	qlen = 0;
 	tlen = 0;
-
+	n_cigar = 0;
 	if (0 != read_len) { // if without else may be it will display previous cigar {
 		transIntoDec(readqry,readStartP,read_len);
 
