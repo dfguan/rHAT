@@ -542,7 +542,7 @@ int Aligner::OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint1
 				} else {
 					//output svsam
 					SvSam_Rec *sv = _svsams[i];
-
+                    //cout<<"splitup"<<endl;
 					for (int j=0; j < countSam; ++j) {
 
 						if (trunk->qual.s == NULL)// this might happend so qual is wrong?
@@ -895,7 +895,7 @@ int Aligner::rhat_seq_read(kstream_t *_fp, kseq_t *_seqs, int n_needed)
 
 	int i = 0;
 	//temp[i].f = _fp;
-	while((temp[i].f = _fp) && kseq_read(temp+i)>=0 && i <n_needed ) {
+	while(i <n_needed && (temp[i].f = _fp) && kseq_read(temp+i)>=0 ) {
 		//int z = 0;
 		//fprintf(stderr, "%s\t%d\n",temp[i].name.s, i);
 		RevComRead(temp[i].seq.s, temp[i].seq.rs, temp[i].seq.l);
