@@ -62,11 +62,11 @@ int Form::usage()
     fprintf(stderr, "Options:   -w, --window-hits      <int>           the max allowed number of windows hitting by a k-mer [1000]\n"); 
     fprintf(stderr, "           -m, --candidates       <int>           the number of candidates for extension [5]\n"); 
     fprintf(stderr, "           -k, --kmer-size        <int>           the size of the k-mers for generating short token matches [13]\n"); 
-   	fprintf(stderr, "           -a, --match            <int>           score of match for the alignments in extension phase [1]\n");
+   	fprintf(stderr, "           -a, --match            <int>           score of match for the alignments in extension phase [2]\n");
    	fprintf(stderr, "           -b, --mismatch         <int>           mismatch penalty for the alignments in extension phase [5]\n");
    	fprintf(stderr, "           -q, --gap-open         <int>           gap open penalty for the alignments in extension phase [2]\n");
    	fprintf(stderr, "           -r, --gap-extension    <int>           gap extension penalty for the alignments in extension phase [1]\n");
-   	fprintf(stderr, "           -t, --threads          <int>           number of thread threads [1]\n");
+   	fprintf(stderr, "           -t, --threads          <int>           number of threads [1]\n");
     fprintf(stderr, "           -h, --help                             help\n");
     fprintf(stderr, "\n"); 
     return 0;

@@ -151,7 +151,7 @@ uint32_t Aligner::gen_sed(char *bases, uint32_t len_bases, uint32_t *_sed_rec)
 
 //status: checked
 //problem: none
-int Aligner::RevComRead(char *read, char *rcRead, int len_read)
+int Aligner::revComRead(char *read, char *rcRead, int len_read)
 {
 	int i;
 	//uint32_t offset = groupNum * opt->len_limit;
@@ -509,7 +509,7 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 
 }
 
-int Aligner::OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint16_t *_sam_details, int _n_seqs)
+int Aligner::outputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint16_t *_sam_details, int _n_seqs)
 {
 	char *probQual = "*";
 	char *usedqual;
@@ -652,7 +652,7 @@ int Aligner::conductAlign(kseq_t *trunk, char *read, char *rcRead, int lenRead, 
 
 
 
-int Aligner::Qualified(SvSam_Rec *key,SvSam_Rec *set, int start, int end)
+int Aligner::qualified(SvSam_Rec *key,SvSam_Rec *set, int start, int end)
 {
 	for (int i=start;i<end;++i) {
 		if (~set[i].MAQ) {
@@ -676,6 +676,43 @@ int 	transIntoDec(uint8_t *transtr,char *str,int length)
 	}
 	return 0;
 }
+int Aligner::mergeBoundaryCigar(string & cigar1, string & cigar2, uint32_t *cigar, int n_cigar, const char *correspondTable) 
+{
+	uint32_t len_cigar1 = cigar1.size();
+	uint32_t len_cigar2 = cigar2.size();
+	
+	uint32_t digit_end_cigar2,digit_start_cigar1;
+
+	for (digit_end_cigar2 = 0; digit_end_cigar2 < len_cigar2; ++digit_end_cigar2) {
+		if (isalpha(cigar2[digit_end_cigar2]))
+			break;
+	}
+
+	for (digit_start_cigar1 = len_cigar1 -2; digit_start_cigar1 >0;--digit_start_cigar1) {
+		if (isalpha(cigar1[digit_start_cigar1])) 
+			break;
+	}
+
+	uint32_t len_digit = len_cigar1 - digit_start_cigar1 - 1; 
+	uint32_t countAlpha_cigar1 = strtoul(cigar1.substr(digit_start_cigar1 + 1, len_digit).c_str(),0,10);
+	uint32_t countAlpha_cigar2 = strtoul(cigar2.substr(0, digit_end_cigar2).c_str(),0,10);
+
+	
+	if (correspondTable[cigar[0]&0xf] ==cigar1[len_cigar1-1]) {
+		cigar[0] += (countAlpha_cigar1 << 4);
+		cigar1.erase(digit_start_cigar1+1,len_digit + 1);
+	}
+
+	if ( correspondTable[cigar[n_cigar-1]&0xf] == cigar2[digit_end_cigar2]) {
+		cigar[n_cigar-1] += (countAlpha_cigar2 << 4) ;
+
+		cigar2.erase( 0, digit_end_cigar2 + 1);
+	}
+
+	return 0;
+}
+
+
 
 int Aligner::connect(SvSam_Rec *rec1, SvSam_Rec *rec2, kseq_t *trunk)
 {
@@ -684,7 +721,7 @@ int Aligner::connect(SvSam_Rec *rec1, SvSam_Rec *rec2, kseq_t *trunk)
 	//rec1->read_end = rec2->read_end;
 	uint8_t 	readqry[1024];
 	uint8_t 	refqry[1024];
-	std::string transitionPart;
+	string transitionPart = "";
 	char 		tempCigar[50];
 	int 		bscore = 0;
 	char 		*readStartP;
@@ -697,17 +734,24 @@ int Aligner::connect(SvSam_Rec *rec1, SvSam_Rec *rec2, kseq_t *trunk)
 	// fprintf(stderr,"%hu\t%hu\n",rec2->read_start,rec1->read_end);
 	// fprintf(stderr,"%hu\t%hu\n",rec2->ref_start,rec1->ref_end);
 	// fprintf(stderr,"%d\t%d\n",ref_len,read_len);
+	uint32_t 	*cigar;
+	int 		n_cigar = 0;
 
 	const 	char 	correspondTable[] = "MIDNSHP=X";
 	if (read_len == 0 || ref_len == 0) {
 		if (read_len != 0) {
-			sprintf(tempCigar,"%dI",read_len);
-			transitionPart.append(tempCigar);
+			//sprintf(tempCigar,"%dI",read_len);
+			//transitionPart.append(tempCigar);
+			//
+			cigar = (uint32_t *)calloc(1,sizeof(uint32_t));
+			cigar[0] = (read_len<<4) | 2;
+			n_cigar = 1;
 			bscore = opt->gapopen + (read_len - 1)*opt->gapextend;
 		} else {
 			if (0 != ref_len) {
-				sprintf(tempCigar,"%dD",ref_len);
-				transitionPart.append(tempCigar);
+				cigar = (uint32_t *)calloc(1,sizeof(uint32_t));
+				cigar[0] = (ref_len<<4) | 3;
+				n_cigar = 1;
 				bscore = opt->gapopen + (ref_len - 1)*opt->gapextend;
 			}
 		}
@@ -725,22 +769,33 @@ int Aligner::connect(SvSam_Rec *rec1, SvSam_Rec *rec2, kseq_t *trunk)
 		const uint8_t *refqry_ = refqry;
 		//prseq(readStartP,read_len,true);
 		//prseq(refStartP,ref_len,true);
-		uint32_t 	*cigar;
-		int 		n_cigar = 0;
+		
 		int w = read_len > ref_len ? read_len : ref_len;
 		//opt->gap open according to address method it may be slow, it will be changed soon
 		bscore = ksw_global(read_len,readqry_,ref_len,refqry_,5,mat,opt->gapopen,opt->gapextend,w,&n_cigar,&cigar);
 
 		//fprintf(stderr,"%d %d %d %d %d %d\n",order[i-1],order[i],read_len,ref_len,score, n_cigar);
-		for (int z=0;z<n_cigar;++z) {
-			sprintf(tempCigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
-			//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
-			//++startPosCigar;
-			transitionPart.append(tempCigar);
-		}
 		//cout<<temp<<"\t"<<score<<'\t'<<"4"<<endl;
-		free(cigar);
+		
 	}
+
+
+	
+	//merge those same alpha(s)
+
+	//in case both ref_len and read_len are zero
+ 	if (n_cigar) {
+ 		mergeBoundaryCigar(rec1->cigar,rec2->cigar,cigar,n_cigar, correspondTable);
+
+ 		for (int z=0;z<n_cigar;++z) {
+ 		 	sprintf(tempCigar,"%u%c",cigar[z]>>4,correspondTable[cigar[z]&0xf]);
+ 		// 	//sams[countSam]._cigar[startPosCigar] = correspondTable[cigar[z]&0xf];
+ 		// 	//++startPosCigar;
+ 		 	transitionPart.append(tempCigar);
+ 		}		
+ 		free(cigar);	
+ 	}
+	
 
 
 	rec1->cigar += transitionPart + rec2->cigar;
@@ -771,7 +826,7 @@ int Aligner::produceSAM(SvSam_Rec *_svsams , int countbulks,int *sam4bulk, kseq_
 			if (~_svsams[j].MAQ) {
 				for (int m=i+1;m<countbulks;++m) {
 					int q;
-					if ((q=Qualified(_svsams+j,_svsams,sam4bulk[m],sam4bulk[m+1]))!= -1) {
+					if ((q=qualified(_svsams+j,_svsams,sam4bulk[m],sam4bulk[m+1]))!= -1) {
 						if (_svsams[j].flag) {
 							connect(_svsams+q,_svsams+j,trunk);
 							extend[q] = extend[j] - 1;
@@ -898,7 +953,7 @@ int Aligner::rhat_seq_read(kstream_t *_fp, kseq_t *_seqs, int n_needed)
 	while(i <n_needed && (temp[i].f = _fp) && kseq_read(temp+i)>=0 ) {
 		//int z = 0;
 		//fprintf(stderr, "%s\t%d\n",temp[i].name.s, i);
-		RevComRead(temp[i].seq.s, temp[i].seq.rs, temp[i].seq.l);
+		revComRead(temp[i].seq.s, temp[i].seq.rs, temp[i].seq.l);
 		++i;
 	}
 	return i;
@@ -1115,7 +1170,7 @@ void Aligner::Runtask()
 
 		while (kseq_read(seqs)>=0) {
 
-			RevComRead(seqs->seq.s, seqs->seq.rs, seqs->seq.l);
+			revComRead(seqs->seq.s, seqs->seq.rs, seqs->seq.l);
 
 			uint16_t sam_details = applyNonSV(seqs, rhashtab, rrhashtab, sams, sed_rec, sed_hit_times, unused_bkt);
 
@@ -1128,7 +1183,7 @@ void Aligner::Runtask()
 			} else
 			 	sam_details = sam_details << 1|1;
 			//printf("%s\t%u\n",seqs->name.s,sam_details);
-			OutputSam(seqs, sams, &svsams, &sam_details, 1);
+			outputSam(seqs, sams, &svsams, &sam_details, 1);
 		}
 		kseq_destroy(seqs);
 	} else {
@@ -1209,7 +1264,7 @@ void Aligner::Runtask()
 			//free(data);
 			free(tid);
 
-			OutputSam(seqs, sams, svsams, sam_details, n_seqs);
+			outputSam(seqs, sams, svsams, sam_details, n_seqs);
 			//fprintf(stderr, "nothing wrong");
 
 		}
