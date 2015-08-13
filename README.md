@@ -89,7 +89,7 @@ rHAT-aligner:
 
 -r, --gap-extension	INT		gap extension penalty for the alignments in extension phase [1]
 
--t, --threads           INT             number of threads [1]
+-t, --threads       INT             number of threads [1]
 ```
 
 ------------------------------------------------------------------------------------------------
