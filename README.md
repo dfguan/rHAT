@@ -46,7 +46,7 @@ rHAT-indexer [-k kmerSize] <HashIndexDir> <Reference>
 Index reference in RHT format
 
 rHAT-aligner [-w windowsHits] [-m candidates] [-k kmerSize] [-a match] [-b mismatch]
-[-q gapOpen] [-r gapExtension] <HashIndexDir> <ReadFile> <Reference>
+[-q gapOpen] [-r gapExtension] [-t threadNumber] <HashIndexDir> <ReadFile> <Reference>
 
 Align read to its primitive location in Reference
 ```
@@ -88,6 +88,8 @@ rHAT-aligner:
 -q, --gap-open		INT		gap open penalty for the alignments in extension phase [2]
 
 -r, --gap-extension	INT		gap extension penalty for the alignments in extension phase [1]
+
+-t, --threads           INT             number of threads [1]
 ```
 
 ------------------------------------------------------------------------------------------------
