@@ -80,6 +80,7 @@ class Aligner {
 	uint8_t 	chrIndex[20];//write
 	int 		countChr;//readable  
 	char 		*genome;//readable
+	char 		*genome_e;
 	uint32_t 	len_genome;//readable
 	Hashtab 	*hashtab;//readable
 	char 		**ChrName;//readable
@@ -119,18 +120,19 @@ private:
 
 	void  			stat_sed(uint32_t *_sed_rec, uint16_t *_sed_hit_times, uint16_t *_unused_bkt, uint32_t usedseed);
 	
-	int 			RevComRead(char *read, char *rcRead, int len_read);
+	int 			revComRead(char *read, char *rcRead, int len_read);
 	
-	bool 			IsQualifiedRead(char *read,int len);
+	bool 			isQualifiedRead(char *read,int len);
 
 	
 	//sv
 	int 			rhat_seq_read(kstream_t *_fp, kseq_t *_seqs, int n_needed);
-	int 			Qualified(SvSam_Rec *key,SvSam_Rec *set, int start, int end);
+	int 			qualified(SvSam_Rec *key,SvSam_Rec *set, int start, int end);
 	int 			connect(SvSam_Rec *rec1, SvSam_Rec *rec2, kseq_t *trunk);
 	int 			produceSAM(SvSam_Rec *_svsams , int countbulks,int *sam4bulk, kseq_t *trunk, uint32_t *len);
-
-	int 			OutputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint16_t *_sam_details, int _n_seqs);
+	int 			mergeBoundaryCigar(string & cigar1, string & cigar2, uint32_t *cigar, int n_cigar, const char *correspondTable);
+	//output
+	int 			outputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint16_t *_sam_details, int _n_seqs);
 };
 typedef struct aux
 {
