@@ -18,7 +18,7 @@ typedef struct options {
 	int 		thread;
 	int 		argc;
 	char 		**argv;
-
+	//int 		localKmer;
 	int 		gapopen;
 	int			gapextend;
 	int			match;

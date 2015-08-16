@@ -11,8 +11,8 @@
 #define WAITING_LEN 448
 
 
-
-char *const short_options = "w:m:k:a:b:q:r:t:h";
+uint32_t const waitingLenlist[] = { 212,276,354,448}; // only support local kmer from 8 to 11
+char *const short_options = "w:m:k:a:b:q:r:t:l:h";
 struct option long_options[] = {
     { "window-hits",     1,   NULL,    'w'   },
     { "candidates",     1,   NULL,    'm' },
@@ -23,11 +23,13 @@ struct option long_options[] = {
     {"gap-open", 1,  NULL, 'q'},
     {"gap-extension", 1,  NULL,'r'},
     {"threads", 1, NULL, 't'},
+    {"local-kmer", 1, NULL, 'l'},
     //{"gapextended", 1,  NULL,'e'},
     //{"match",   1,  NULL,'c'},
     {"help",    0,  NULL,'h'},
     { 0,     0,   0,    0   }
 };
+
 
 Form::Form(opts *opt)
 {
@@ -36,11 +38,11 @@ Form::Form(opts *opt)
     opt->canN = 5;
     opt->hit_limit = 1000;
     //opt->usecigar = true;
-
+    //opt->localKmer = 11;
     opt->rh_seed_len = RH_SEED_LEN; //might be useless
     opt->waitingLen = WAITING_LEN; // might be useless
     opt->thread = 1;
-    opt->len_limit = 100000;
+    opt->len_limit = 100000;// might be updated soon
     opt->gapopen = 2;
     opt->gapextend = 1;
     opt->mismatch = 5;
@@ -66,6 +68,7 @@ int Form::usage()
    	fprintf(stderr, "           -b, --mismatch         <int>           mismatch penalty for the alignments in extension phase [5]\n");
    	fprintf(stderr, "           -q, --gap-open         <int>           gap open penalty for the alignments in extension phase [2]\n");
    	fprintf(stderr, "           -r, --gap-extension    <int>           gap extension penalty for the alignments in extension phase [1]\n");
+   	fprintf(stderr, "           -l, --local-kmer       <int>           the minimum length of the local matches used for SDP [11]\n");
    	fprintf(stderr, "           -t, --threads          <int>           number of threads [1]\n");
     fprintf(stderr, "           -h, --help                             help\n");
     fprintf(stderr, "\n"); 
@@ -106,6 +109,9 @@ int Form::opt_parse(int argc, char *argv[], opts* opt)
             case 't':
                 opt->thread = atoi(optarg);
                 break;
+            case 'l':
+            	opt->rh_seed_len = atoi(optarg);
+            	break;
             default:
                 fprintf(stderr,"not proper parameters\n");
                 return usage();
@@ -117,6 +123,12 @@ int Form::opt_parse(int argc, char *argv[], opts* opt)
         fprintf(stderr, "[opt_parse]: index directory, read file and reference file can't be omited!\n"); 
         return 0; 
     }
+
+    if (opt->rh_seed_len > 11)  opt->rh_seed_len = 11;
+    else  if (opt->rh_seed_len < 8) opt->rh_seed_len = 8;
+
+    opt->waitingLen = waitingLenlist[opt->rh_seed_len - 8];
+
     opt->argv = argv;
     opt->argc = argc;
  	strncpy(opt->hashdir, argv[optind++],sizeof(opt->hashdir));

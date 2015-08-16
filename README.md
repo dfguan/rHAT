@@ -33,7 +33,7 @@ k-mer size=15 (max k-mer size),  4.76 Gigabytes
 
 Current version of rHAT needs to be run on Linux operating system.
 
-The source code is written in C++, and can be directly download from: https://github.com/Derek-Guan/rHAT
+The source code is written in C++, and can be directly download from: https://github.com/derekguan/rHAT
 
 The makefile is attached. Use the make command for generating the executable file.
 
@@ -56,23 +56,23 @@ Align read to its primitive location in Reference
 ###Parameters (could be updated in the future for adding new functions)
 ```
 rHAT-indexer:
--k, --kmer-size		INT		The size of the k-mers extracted from the reference genome for indexing[13].
+-k, --kmer-size      INT    The size of the k-mers extracted from the reference genome for indexing[13].
 
 rHAT-aligner:
--w, --window-hits	INT		The max allowed number of windows hit by a k-mer, if a k-mer 
+-w, --window-hits    INT    The max allowed number of windows hit by a k-mer, if a k-mer
                             hits more than -w genomic windows, rHAT would consider the k-mer 
                             is too repetitive, and discard the k-mer. (default = 1000)
 
--m, --candidates	INT		The number of candidates for extension, this is one of the 
-                            major heuristic parameters in rHAT. Setting -m high will let 
-                            rHAT aligns the read to many local sites, which could affect 
+-m, --candidates     INT    The number of candidates for extension, this is one of the
+                            major heuristic parameters in rHAT. Setting -m high will let
+                            rHAT aligns the read to many local sites, which could affect
                             the throughput, while setting -m low may make too few candidates
                             which could affect the sensitivity and accuracy of the alignment. 
                             Based on the benchmarking on a series of simulated and real datasets 
                             from various genomes, we suggest that setting the -m parameter to 
                             5-10 could reconcile the effectiveness and efficiency in most cases. (default = 5)
 
--k, --kmer-size		INT		The size of the k-mer extracted from the read for generating short 
+-k, --kmer-size      INT    The size of the k-mer extracted from the read for generating short 
                             token matches, note that it needs to be same to the setting of -k parameter
                             in rHAT-indexer. It is not allowed to set -k parameter >15 in current version of rHAT,
                             due to the large usage of RAM. It is also worth noting that, for a large 
@@ -81,18 +81,21 @@ rHAT-aligner:
                             windows and ignored by rHAT according to the limit on the windows hits, 
                             i.e., the -w setting. 
 
--a, --match		    INT		score of match for the alignments in extension phase [1]
+-a, --match          INT    score of match for the alignments in extension phase [1]
 
--b, --mismatch		INT		mismatch penalty for the alignments in extension phase [5]
+-b, --mismatch       INT    mismatch penalty for the alignments in extension phase [5]
 
--q, --gap-open		INT		gap open penalty for the alignments in extension phase [2]
+-q, --gap-open       INT    gap open penalty for the alignments in extension phase [2]
 
--r, --gap-extension	INT		gap extension penalty for the alignments in extension phase [1]
+-r, --gap-extension  INT    gap extension penalty for the alignments in extension phase [1]
 
--t, --threads       INT     number of threads [1]
+-l, --local-kmer     INT    The minimum length of the local matches used for SDP, in the extension phase, only the
+                            local mathces longer than -l bp will be utilized for building skeleton of alignment [11]
+
+-t, --threads        INT    number of threads [1]
 ```
 
-------------------------------------------------------------------------------------------------
+---
 
 ###Quick start
 ```
@@ -104,6 +107,7 @@ Read alignment:
 
 rHAT-aligner Genome_Index_Dir Fastq_File Genome_File > Sam_File
 ```
+
 ---
 
 ###Simulation benchmarking:
