@@ -517,6 +517,7 @@ int Aligner::outputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint1
 	kseq_t *trunk;
 
 	for (int i=0; i<_n_seqs; ++i) {
+			
 			if (_sam_details[i]) {
 				int countSam = _sam_details[i] >> 1;
 				trunk = _seqs + i;
@@ -544,21 +545,24 @@ int Aligner::outputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint1
 					SvSam_Rec *sv = _svsams[i];
                     //cout<<"splitup"<<endl;
 					for (int j=0; j < countSam; ++j) {
+						if (~sv[j].MAQ) {
+													
+							if (trunk->qual.s == NULL)// this might happend so qual is wrong?
+								usedqual = probQual;
+							else
+								usedqual = trunk->qual.s;
+							if (sv[j].flag) 		_usedread = trunk->seq.rs;
+							else 					_usedread = trunk->seq.s;
 
-						if (trunk->qual.s == NULL)// this might happend so qual is wrong?
-							usedqual = probQual;
-						else
-							usedqual = trunk->qual.s;
-						if (sv[j].flag) 		_usedread = trunk->seq.rs;
-						else 					_usedread = trunk->seq.s;
-
-						cout<<trunk->name.s<<"\t"<<sv[j].flag<<"\t"<<ChrName[sv[j].chrIndex]<<"\t"<<sv[j].pos<<"\t"<<sv[j].MAQ<<"\t";
-						if (sv[j].lclip)	cout<<sv[j].lclip<<"S";
-						cout<<sv[j].cigar;
-						if (sv[j].rclip)	cout<<sv[j].rclip<<"S";
-						cout<<"\t"<<"*"<<"\t"<<"0"<<"\t"<<"0"<<"\t";
-						cout<<_usedread<<"\t";
-						cout<<usedqual<<"\t"<<"AS:i:"<<sv[j].score<<endl;
+							cout<<trunk->name.s<<"\t"<<sv[j].flag<<"\t"<<ChrName[sv[j].chrIndex]<<"\t"<<sv[j].pos<<"\t"<<sv[j].MAQ<<"\t";
+							if (sv[j].lclip)	cout<<sv[j].lclip<<"S";
+							cout<<sv[j].cigar;
+							if (sv[j].rclip)	cout<<sv[j].rclip<<"S";
+							cout<<"\t"<<"*"<<"\t"<<"0"<<"\t"<<"0"<<"\t";
+							cout<<_usedread<<"\t";
+							cout<<usedqual<<"\t"<<"AS:i:"<<sv[j].score<<endl;	
+						
+						}
 
 
 					}
@@ -744,13 +748,13 @@ int Aligner::connect(SvSam_Rec *rec1, SvSam_Rec *rec2, kseq_t *trunk)
 			//transitionPart.append(tempCigar);
 			//
 			cigar = (uint32_t *)calloc(1,sizeof(uint32_t));
-			cigar[0] = (read_len<<4) | 2;
+			cigar[0] = (read_len<<4) | 1;
 			n_cigar = 1;
 			bscore = opt->gapopen + (read_len - 1)*opt->gapextend;
 		} else {
 			if (0 != ref_len) {
 				cigar = (uint32_t *)calloc(1,sizeof(uint32_t));
-				cigar[0] = (ref_len<<4) | 3;
+				cigar[0] = (ref_len<<4) | 2;
 				n_cigar = 1;
 				bscore = opt->gapopen + (ref_len - 1)*opt->gapextend;
 			}
@@ -885,12 +889,12 @@ int Aligner::produceSAM(SvSam_Rec *_svsams , int countbulks,int *sam4bulk, kseq_
 	//char *usedqual;
 	//char *probQual = "*";
 	if (_svsams[bestInd].flag) {
-		_svsams[bestInd].rclip = len[bestbulk+extend[bestInd]];
-		_svsams[bestInd].lclip = trunk->seq.l - len[bestbulk+1];
+		_svsams[bestInd].rclip = _svsams[bestInd].read_start;
+		_svsams[bestInd].lclip = trunk->seq.l - _svsams[bestInd].read_end;
 		//usedread = trunk->seq;
 	} else {
-		_svsams[bestInd].rclip = len[bestbulk];
-		_svsams[bestInd].lclip = trunk->seq.l - len[bestbulk+1+extend[bestInd]];
+		_svsams[bestInd].rclip = trunk->seq.l - _svsams[bestInd].read_end;
+		_svsams[bestInd].lclip = _svsams[bestInd].read_start;
 		//usedread = trunk->seq.s;
 	}
 
@@ -915,12 +919,12 @@ int Aligner::produceSAM(SvSam_Rec *_svsams , int countbulks,int *sam4bulk, kseq_
 				if (~_svsams[j].MAQ && j != bestInd) {
 					//output
 					if (_svsams[j].flag) {
-						_svsams[j].rclip = len[i+extend[j]];
-						_svsams[j].lclip = trunk->seq.l - len[i+1];
+						_svsams[j].rclip = _svsams[j].read_start;
+						_svsams[j].lclip = trunk->seq.l - _svsams[j].read_end;
 						//usedread = RCRead;
 					} else {
-						_svsams[j].lclip = len[i];
-						_svsams[j].rclip = trunk->seq.l - len[i+1+extend[j]];
+						_svsams[j].lclip = _svsams[j].read_start;
+						_svsams[j].rclip = trunk->seq.l - _svsams[j].read_end;
 						//usedread = trunk->seq.s;
 					}
 					_svsams[j].flag += 256;
