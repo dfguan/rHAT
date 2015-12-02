@@ -534,7 +534,7 @@ int Aligner::outputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint1
 						else
 							_usedread = trunk->seq.s;
 
-						cout<<trunk->name.s<<"\t"<<nonSv[j].flag<<"\t"<<ChrName[nonSv[j].chrIndex]<<"\t"<<nonSv[j].pos<<"\t"<<nonSv[j].MAQ<<"\t"<<nonSv[j].cigar<<"\t"<<"*"<<"\t"<<"0"<<"\t"
+						cout<<trunk->name.s<<"\t"<<nonSv[j].flag<<"\t"<<ChrName[nonSv[j].chrIndex]<<"\t"<<nonSv[j].pos+1<<"\t"<<nonSv[j].MAQ<<"\t"<<nonSv[j].cigar<<"\t"<<"*"<<"\t"<<"0"<<"\t"
 						<<"0"<<"\t";
 						cout<<_usedread<<"\t";
 						cout<<usedqual<<"\t"<<"AS:i:"<<nonSv[j].score<<endl;
@@ -554,7 +554,7 @@ int Aligner::outputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint1
 							if (sv[j].flag) 		_usedread = trunk->seq.rs;
 							else 					_usedread = trunk->seq.s;
 
-							cout<<trunk->name.s<<"\t"<<sv[j].flag<<"\t"<<ChrName[sv[j].chrIndex]<<"\t"<<sv[j].pos<<"\t"<<sv[j].MAQ<<"\t";
+							cout<<trunk->name.s<<"\t"<<sv[j].flag<<"\t"<<ChrName[sv[j].chrIndex]<<"\t"<<sv[j].pos+1<<"\t"<<sv[j].MAQ<<"\t";
 							if (sv[j].lclip)	cout<<sv[j].lclip<<"S";
 							cout<<sv[j].cigar;
 							if (sv[j].rclip)	cout<<sv[j].rclip<<"S";
