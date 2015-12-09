@@ -31,7 +31,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 #define KS_SEP_SPACE 0 // isspace(): \t, \n, \v, \f, \r
 #define KS_SEP_TAB   1 // isspace() && !' '
 #define KS_SEP_MAX   1
@@ -39,9 +39,9 @@
 #define __KS_TYPE(type_t)						\
 	typedef struct __kstream_t {				\
 		unsigned char *buf;						\
-		int begin, end, is_eof;					\
-		type_t f;								\
-	} kstream_t;
+		int begin, end, is_eof, last_char;					\
+		type_t f;								\		   							
+} kstream_t; 
 
 #define ks_eof(ks) ((ks)->is_eof && (ks)->begin >= (ks)->end)
 #define ks_rewind(ks) ((ks)->is_eof = (ks)->begin = (ks)->end = 0)
@@ -154,7 +154,7 @@ typedef struct __kstring_t {
 	}																	\
 	static inline void kseq_rewind(kseq_t *ks)							\
 	{																	\
-		ks->last_char = 0;												\
+		ks->f->last_char = 0;												\
 		ks->f->is_eof = ks->f->begin = ks->f->end = 0;					\
 	}																	\
 	static inline void kseq_destroy(kseq_t *ks)							\
@@ -175,10 +175,10 @@ typedef struct __kstring_t {
 	{ \
 		int c; \
 		kstream_t *ks = seq->f; \
-		if (seq->last_char == 0) { /* then jump to the next header line */ \
+		if (ks->last_char == 0) { /* then jump to the next header line */ \
 			while ((c = ks_getc(ks)) != -1 && c != '>' && c != '@'); \
 			if (c == -1) return -1; /* end of file */ \
-			seq->last_char = c; \
+			ks->last_char = c; \
 		} /* else: the first header char has been read in the previous call */ \
 		seq->comment.l = seq->seq.l = seq->qual.l = 0; /* reset all members */ \
 		if (ks_getuntil(ks, 0, &seq->name, &c) < 0) return -1; /* normal exit: EOF */ \
@@ -192,7 +192,7 @@ typedef struct __kstring_t {
 			seq->seq.s[seq->seq.l++] = c; /* this is safe: we always have enough space for 1 char */ \
 			ks_getuntil2(ks, '\n', &seq->seq, 0, 1); /* read the rest of the line */ \
 		} \
-		if (c == '>' || c == '@') seq->last_char = c; /* the first header char has been read */	\
+		if (c == '>' || c == '@') ks->last_char = c; /* the first header char has been read */	\
 		if (seq->seq.l + 1 >= seq->seq.m) { /* seq->seq.s[seq->seq.l] below may be out of boundary */ \
 			seq->seq.m = seq->seq.l + 2; \
 			kroundup32(seq->seq.m); /* rounded to the next closest 2^k */ \
@@ -201,6 +201,7 @@ typedef struct __kstring_t {
 		} \
 		seq->seq.s[seq->seq.l] = 0;	/* null terminated string */ \
 		if (c != '+') return seq->seq.l; /* FASTA */ \
+		fprintf(stderr,"notfa");\
 		if (seq->qual.m < seq->seq.m) {	/* allocate memory for qual in case insufficient */ \
 			seq->qual.m = seq->seq.m; \
 			seq->qual.s = (char*)realloc(seq->qual.s, seq->qual.m); \
@@ -208,7 +209,7 @@ typedef struct __kstring_t {
 		while ((c = ks_getc(ks)) != -1 && c != '\n'); /* skip the rest of '+' line */ \
 		if (c == -1) return -2; /* error: no quality string */ \
 		while (ks_getuntil2(ks, '\n', &seq->qual, 0, 1) >= 0 && seq->qual.l < seq->seq.l); \
-		seq->last_char = 0;	/* we have not come to the next header line */ \
+		ks->last_char = 0;	/* we have not come to the next header line */ \
 		if (seq->seq.l != seq->qual.l) return -2; /* error: qual string is of a different length */ \
 		return seq->seq.l; \
 	}
@@ -216,7 +217,6 @@ typedef struct __kstring_t {
 #define __KSEQ_TYPE(type_t)						\
 	typedef struct {							\
 		kstring_t name, comment, seq, qual;		\
-		int last_char;							\
 		kstream_t *f;							\
 	} kseq_t;
 

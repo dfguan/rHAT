@@ -954,11 +954,14 @@ int Aligner::rhat_seq_read(kstream_t *_fp, kseq_t *_seqs, int n_needed)
 
 	int i = 0;
 	//temp[i].f = _fp;
+	//temp[i].last_char = temp[n_needed - 1].last_char;
+	
 	while(i <n_needed && (temp[i].f = _fp) && kseq_read(temp+i)>=0 ) {
 		//int z = 0;
 		//fprintf(stderr, "%s\t%d\n",temp[i].name.s, i);
 		revComRead(temp[i].seq.s, temp[i].seq.rs, temp[i].seq.l);
 		++i;
+		//fprintf(stderr,"%d\n",temp[i].last_char);
 	}
 	return i;
 
@@ -1173,7 +1176,7 @@ void Aligner::Runtask()
 		if ( NULL==rrhashtab ) { fprintf(stderr, "Failed when applying for new space! now exit"); exit(1);}
 
 		while (kseq_read(seqs)>=0) {
-
+			//fprintf(stderr,"%d\n",seqs->last_char);
 			revComRead(seqs->seq.s, seqs->seq.rs, seqs->seq.l);
 
 			uint16_t sam_details = applyNonSV(seqs, rhashtab, rrhashtab, sams, sed_rec, sed_hit_times, unused_bkt);
