@@ -1276,7 +1276,8 @@ void Aligner::Runtask()
 
 		}
 		pthread_rwlock_destroy(&rwlock);
-		free(seqs);
+		if (seqs) free(seqs);
+		if (_fp)  free(_fp);
 		delete []sams;
 		delete []svsams;
 		delete []sam_details;
@@ -1308,8 +1309,8 @@ void Aligner::Runtask()
 
 
 	if (NULL != ChrName) {
-		for (int i=0;i<100;++i) { delete ChrName[i]; }
-		delete ChrName;
+		for (int i=0;i<100;++i) { delete[] ChrName[i]; }
+		delete[] ChrName;
 	}
 
 	// delete rhashtab;
