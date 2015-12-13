@@ -201,7 +201,6 @@ typedef struct __kstring_t {
 		} \
 		seq->seq.s[seq->seq.l] = 0;	/* null terminated string */ \
 		if (c != '+') return seq->seq.l; /* FASTA */ \
-		fprintf(stderr,"notfa");\
 		if (seq->qual.m < seq->seq.m) {	/* allocate memory for qual in case insufficient */ \
 			seq->qual.m = seq->seq.m; \
 			seq->qual.s = (char*)realloc(seq->qual.s, seq->qual.m); \
