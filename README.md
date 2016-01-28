@@ -120,10 +120,10 @@ https://drive.google.com/folderview?id=0Bwibkj8plEJrZFlNOG1rd3hBRWM&usp=sharing
 
 ###Reference
 
-rHAT: Fast aligning noisy long read with regional hashing. *Under Review*.
+rHAT: Fast aligning noisy long read with regional hashing. *Accepted by Bioinformatics*.
 
 ---
 
 ###Contact
 
-For advising, bug reporting and requiring help, please contact ydwang@hit.edu.cn
+For advising, bug reporting and requiring help, please contact dfguan@hit.edu.cn
