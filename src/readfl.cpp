@@ -37,11 +37,17 @@ void combineStr(char *str1,char *str2,uint32_t len)
 
 }
 
-char *read_file::read_ref(char *path,uint32_t *len_genome, uint32_t *Start_pos, char **chrName,int *count_chrl)
+char *read_file::read_ref(char *path,uint32_t *len_genome, uint32_t *&Start_pos, char *&chrName,int *count_chrl)
 {
         char *genome = NULL;
     //get the size of file 
-        ifstream fl;
+        int bulk_size = 250;
+	Start_pos = (uint32_t *)calloc(bulk_size, sizeof(uint32_t));
+	
+	chrName = (char *)calloc((bulk_size<<7),sizeof(char));
+
+
+	ifstream fl;
         fl.open(path);
         if (fl.fail()) {
             fprintf(stderr,"Failed to open reference file, now exit\n");
@@ -55,6 +61,7 @@ char *read_file::read_ref(char *path,uint32_t *len_genome, uint32_t *Start_pos, 
         fl.close();
     //use kseq to read ref.  
         genome = new char[flsize];
+
         gzFile fp;
         kseq_t *trunk; 
         fp = gzopen(path, "r");
@@ -72,9 +79,18 @@ char *read_file::read_ref(char *path,uint32_t *len_genome, uint32_t *Start_pos, 
             //*len_genome += trunk->seq.l;
             combineStr(genome+*len_genome,trunk->seq.s,trunk->seq.l);
             *len_genome += trunk->seq.l;
-            Start_pos[index] = *len_genome;
-            strcpy(chrName[index++],trunk->name.s);
+            if (index >= bulk_size) {
+	    	Start_pos = (uint32_t *)realloc(Start_pos, (bulk_size<<1)*sizeof(uint32_t));
+		
+		chrName = (char *)realloc(chrName, ((bulk_size<<1)<<7)*sizeof(char));
+	    	
+		bulk_size <<= 1;
+	    }
+	    Start_pos[index] = *len_genome;
+            strcpy(chrName + (index<<7),trunk->name.s);
+	    ++index;
         }
+	fprintf(stderr,"heheheheh");
         *count_chrl = index;
         preDealRef(genome,*len_genome);
         kseq_destroy(trunk);

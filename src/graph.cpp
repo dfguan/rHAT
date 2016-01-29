@@ -256,7 +256,7 @@ Graphic::Graphic(char *_ref_s, char *_ref_e)
 	ref_t = _ref_e;
 }
 int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen,
- uint32_t left_start,bool rc, uint32_t *startPos, char **chrName, int countChr, Sam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape)
+ uint32_t left_start,bool rc, uint32_t *startPos,  int countChr, Sam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape)
 {
 	uint16_t seq_counter[lenRef];// = new uint16_t[lenRef];
 	uint16_t p2startPos[lenRef]; //= new uint16_t [lenRef];
@@ -292,11 +292,11 @@ int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char
 			return -1;
 		createLimVertex(rhashtab->seq_num,ref,lenRef,read,lenRead,seq_counter,p2startPos, rhashtab->len_sed, head,tail);
 	}
-	return dealGraph(lenRef, lenRead, read, ref, score, waitingLen, left_start, rc, startPos, chrName, countChr, sam, countSam, mat, gapo, gape);
+	return dealGraph(lenRef, lenRead, read, ref, score, waitingLen, left_start, rc, startPos,  countChr, sam, countSam, mat, gapo, gape);
 }
 
 int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen,
- uint32_t left_start,bool rc, uint32_t *startPos, char **chrName, int countChr, SvSam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape)
+ uint32_t left_start,bool rc, uint32_t *startPos,  int countChr, SvSam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape)
 {
 	uint16_t seq_counter[lenRef];// = new uint16_t[lenRef];
 	uint16_t p2startPos[lenRef]; //= new uint16_t [lenRef];
@@ -332,7 +332,7 @@ int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char
 			return -1;
 		createLimVertex(rhashtab->seq_num,ref,lenRef,read,lenRead,seq_counter,p2startPos, rhashtab->len_sed, head,tail);
 	}
-	return dealGraph(lenRef, lenRead, read, ref, score, waitingLen, left_start, rc, startPos, chrName, countChr, sam, countSam, mat, gapo, gape);
+	return dealGraph(lenRef, lenRead, read, ref, score, waitingLen, left_start, rc, startPos,  countChr, sam, countSam, mat, gapo, gape);
 }
 
 void Graphic::buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uint16_t *seq_counter, uint16_t *p2startPos)
@@ -651,7 +651,7 @@ int 	Graphic::transIntoDec(uint8_t *transtr,char *str, int length)
 	return 0;
 }
 int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t totalReadlen, char *ref, uint32_t totalReflen, uint32_t left_start,
-		bool rc, uint32_t *chrStartP, char **chrName, int countChr, SvSam_Rec *sams, int countSam, int8_t *mat, int gapo, int gape)
+		bool rc, uint32_t *chrStartP,  int countChr, SvSam_Rec *sams, int countSam, int8_t *mat, int gapo, int gape)
 {
 	//calculate 0 to order[order_len-1];
 	//fprintf(stderr,"len%d",order_len);
@@ -968,7 +968,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 }
 
 int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t totalReadlen, char *ref, uint32_t totalReflen, uint32_t left_start,
-		bool rc, uint32_t *chrStartP, char **chrName, int countChr, Sam_Rec *sams, int countSam, int8_t *mat, int gapo, int gape)
+		bool rc, uint32_t *chrStartP,  int countChr, Sam_Rec *sams, int countSam, int8_t *mat, int gapo, int gape)
 {
 	//calculate 0 to order[order_len-1];
 	//fprintf(stderr,"len%d",order_len);
@@ -1060,7 +1060,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		sams[countSam].flag = 0;
 
 		//cout<<16<<"\t"; else cout<<0<<"\t";
-	//cout<<chrName[ind]<<"\t"<<chrstartPos<<"\t"<<0<<"\t";
+	//cout<<lplihrName[ind]<<"\t"<<chrstartPos<<"\t"<<0<<"\t";
 
 	//for(int z=n_cigar-1;z>=0;--z)
 	//	cout<<cigar[z];
@@ -1472,7 +1472,7 @@ int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,boo
 
 
 int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref, int *score, uint32_t waitingLen, uint32_t left_start,
-		bool rc, uint32_t *startPos, char **chrName, int countChr, Sam_Rec *sam, int countSam, int8_t *matrix, int gapo, int gape)
+		bool rc, uint32_t *startPos, int countChr, Sam_Rec *sam, int countSam, int8_t *matrix, int gapo, int gape)
 {
 	vertex start,end;
 	start.read_seq = 0;
@@ -1636,7 +1636,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 
 	//fprintf(stderr,"%d",counterofRightOrder);
 	//return 1;
-	return CalEditDistancewithCigar(rightOrder, counterofRightOrder, read, lenRead, ref, lenRef,left_start,rc,startPos,chrName,countChr,sam, countSam, matrix, gapo, gape);
+	return CalEditDistancewithCigar(rightOrder, counterofRightOrder, read, lenRead, ref, lenRef,left_start,rc,startPos,countChr,sam, countSam, matrix, gapo, gape);
 
 	//get the right order of sequence (rightOrder[] and a counter )
 	//ask for revread[200] revref[200] revcigarbuf[401]
@@ -1646,7 +1646,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 	//first get reflen, get readlen
 }
 int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref, int *score, uint32_t waitingLen, uint32_t left_start,
-		bool rc, uint32_t *startPos, char **chrName, int countChr, SvSam_Rec *sam, int countSam, int8_t *matrix, int gapo, int gape)
+		bool rc, uint32_t *startPos, int countChr, SvSam_Rec *sam, int countSam, int8_t *matrix, int gapo, int gape)
 {
 	vertex start,end;
 	start.read_seq = 0;
@@ -1810,7 +1810,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 
 	//fprintf(stderr,"%d",counterofRightOrder);
 	//return 1;
-	return CalEditDistancewithCigar(rightOrder, counterofRightOrder, read, lenRead, ref, lenRef,left_start,rc,startPos,chrName,countChr,sam, countSam, matrix, gapo, gape);
+	return CalEditDistancewithCigar(rightOrder, counterofRightOrder, read, lenRead, ref, lenRef,left_start,rc,startPos,countChr,sam, countSam, matrix, gapo, gape);
 
 	//get the right order of sequence (rightOrder[] and a counter )
 	//ask for revread[200] revref[200] revcigarbuf[401]

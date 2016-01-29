@@ -401,7 +401,7 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 			usedhash = _rhashtable;				//cout<<pos+left_start<<endl;
 		}
 
-		flag = gra.applyGraphic(usedhash, genome+left_start, extract_length, _usedread, trunk->seq.l,&score,opt->waitingLen, left_start,rc,Start_pos,ChrName,
+		flag = gra.applyGraphic(usedhash, genome+left_start, extract_length, _usedread, trunk->seq.l,&score,opt->waitingLen, left_start,rc,Start_pos,
 				countChr, _sams, countSam, mat, opt->gapopen, opt->gapextend);
 
 		if ( 1 == flag) {
@@ -449,7 +449,7 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 
 			}
 
-			flag = gra.applyGraphic(usedhash, genome+left_start, extract_length, _usedread, trunk->seq.l,&score,opt->waitingLen<<1, left_start,rc,Start_pos,ChrName,
+			flag = gra.applyGraphic(usedhash, genome+left_start, extract_length, _usedread, trunk->seq.l,&score,opt->waitingLen<<1, left_start,rc,Start_pos,
 					countChr, _sams, countSam, mat, opt->gapopen, opt->gapextend);
 			if (flag == 1)  {
 				++countSam;
@@ -534,7 +534,7 @@ int Aligner::outputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint1
 						else
 							_usedread = trunk->seq.s;
 
-						cout<<trunk->name.s<<"\t"<<nonSv[j].flag<<"\t"<<ChrName[nonSv[j].chrIndex]<<"\t"<<nonSv[j].pos+1<<"\t"<<nonSv[j].MAQ<<"\t"<<nonSv[j].cigar<<"\t"<<"*"<<"\t"<<"0"<<"\t"
+						cout<<trunk->name.s<<"\t"<<nonSv[j].flag<<"\t"<<ChrName + (nonSv[j].chrIndex << 7)<<"\t"<<nonSv[j].pos+1<<"\t"<<nonSv[j].MAQ<<"\t"<<nonSv[j].cigar<<"\t"<<"*"<<"\t"<<"0"<<"\t"
 						<<"0"<<"\t";
 						cout<<_usedread<<"\t";
 						cout<<usedqual<<"\t"<<"AS:i:"<<nonSv[j].score<<endl;
@@ -554,7 +554,7 @@ int Aligner::outputSam(kseq_t *_seqs, Sam_Rec *_sams, SvSam_Rec **_svsams, uint1
 							if (sv[j].flag) 		_usedread = trunk->seq.rs;
 							else 					_usedread = trunk->seq.s;
 
-							cout<<trunk->name.s<<"\t"<<sv[j].flag<<"\t"<<ChrName[sv[j].chrIndex]<<"\t"<<sv[j].pos+1<<"\t"<<sv[j].MAQ<<"\t";
+							cout<<trunk->name.s<<"\t"<<sv[j].flag<<"\t"<<ChrName + (sv[j].chrIndex << 7)<<"\t"<<sv[j].pos+1<<"\t"<<sv[j].MAQ<<"\t";
 							if (sv[j].lclip)	cout<<sv[j].lclip<<"S";
 							cout<<sv[j].cigar;
 							if (sv[j].rclip)	cout<<sv[j].rclip<<"S";
@@ -635,7 +635,7 @@ int Aligner::conductAlign(kseq_t *trunk, char *read, char *rcRead, int lenRead, 
 			usedhash = _rhashtab;				//cout<<pos+left_start<<endl;
 		}
 
-		flag = gra.applyGraphic(usedhash, genome+left_start, extract_length, _usedread, lenRead,&score,opt->waitingLen,left_start,rc,Start_pos,ChrName,
+		flag = gra.applyGraphic(usedhash, genome+left_start, extract_length, _usedread, lenRead,&score,opt->waitingLen,left_start,rc,Start_pos,
 				countChr, _svsamsp, countSam, mat, opt->gapopen, opt->gapextend);
 
 		if ( 1 == flag) {
@@ -1129,8 +1129,6 @@ void Aligner::Runtask()
 	len_genome = 0;
 	read_file rd;
 
-	ChrName = new char *[LEN];
-	for (int i=0;i<100;++i) { ChrName[i] = new char[LEN];}
 	//int 	 countChr;
 	genome = rd.read_ref(opt->refpath,&len_genome,Start_pos,ChrName,&countChr);
 
@@ -1142,7 +1140,7 @@ void Aligner::Runtask()
 	genome_e = genome + len_genome - 1;
 	//output header
 	cout<<"@HD\tVN:"<<PACKAGE_VERSION<<endl;
-	for (int i=1;i<countChr;++i) {cout<<"@SQ\tSN:"<<ChrName[i]<<"\tLN:"<<Start_pos[i]-Start_pos[i-1]<<endl;}
+	for (int i=1;i<countChr;++i) {cout<<"@SQ\tSN:"<<ChrName + (i << 7)<<"\tLN:"<<Start_pos[i]-Start_pos[i-1]<<endl;}
 	cout<<"@PG\tID:"<<PACKAGE_NAME<<"\tVN:"<<PACKAGE_VERSION<<"\tCL:";
 	for (int i=0;i<opt->argc;++i) {cout<<opt->argv[i]<<" ";}
 	cout<<endl;
@@ -1178,7 +1176,6 @@ void Aligner::Runtask()
 		while (kseq_read(seqs)>=0) {
 			//fprintf(stderr,"%d\n",seqs->last_char);
 			revComRead(seqs->seq.s, seqs->seq.rs, seqs->seq.l);
-
 			uint16_t sam_details = applyNonSV(seqs, rhashtab, rrhashtab, sams, sed_rec, sed_hit_times, unused_bkt);
 
 			if (!sam_details && !(seqs->seq.l < LEN_BASES)) {
@@ -1308,10 +1305,11 @@ void Aligner::Runtask()
 		delete hashtab;
 
 
-	if (NULL != ChrName) {
-		for (int i=0;i<100;++i) { delete[] ChrName[i]; }
-		delete[] ChrName;
-	}
+	if (NULL != ChrName) 
+		free(ChrName);
+	
+	if (NULL != Start_pos)
+	       	free(Start_pos);
 
 	// delete rhashtab;
 	// delete rrhashtab;

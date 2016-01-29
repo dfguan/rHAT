@@ -77,14 +77,14 @@ typedef struct {
 class Aligner {
 	bkt2 		preserved[20];//should be a defined number write
 	uint32_t 	pos[20];//write	
-	uint8_t 	chrIndex[20];//write
+	uint32_t 	chrIndex[20];//write
 	int 		countChr;//readable  
 	char 		*genome;//readable
 	char 		*genome_e;
 	uint32_t 	len_genome;//readable
 	Hashtab 	*hashtab;//readable
-	char 		**ChrName;//readable
-	uint32_t 	Start_pos[100];//readable
+	char 		*ChrName;//readable chrosome numbe could be more than 1024
+	uint32_t 	*Start_pos;//readable 
 	opts 		*opt;//readable
 	int8_t 		mat[25];
 public:
