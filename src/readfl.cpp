@@ -90,7 +90,7 @@ char *read_file::read_ref(char *path,uint32_t *len_genome, uint32_t *&Start_pos,
             strcpy(chrName + (index<<7),trunk->name.s);
 	    ++index;
         }
-	fprintf(stderr,"heheheheh");
+	//fprintf(stderr,"heheheheh");
         *count_chrl = index;
         preDealRef(genome,*len_genome);
         kseq_destroy(trunk);
