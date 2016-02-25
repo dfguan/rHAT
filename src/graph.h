@@ -38,7 +38,7 @@ typedef struct sam_rec{
 
 
 typedef struct svsam_rec {
-	uint8_t 	chrIndex;
+	int 		chrIndex;
 	uint32_t 	pos;
 	//char 		_cigar[LEN_LIMIT<<1];
 	string		cigar;

@@ -694,7 +694,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 
 
 
-	uint8_t  ind;
+	int  ind;
 	uint32_t r_startP;
 	uint32_t chrstartPos;
 	char  	 trans_cigar[50];
@@ -734,9 +734,9 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 			break;
 	chrstartPos = r_startP - chrStartP[ind-1];
 	// if exists;
-
-	for (uint8_t i=0; i<countSam; ++i) {
-		if (ind == sams[i].chrIndex && chrstartPos == sams[i].pos)
+	uint32_t _ind = ind; 
+	for (int i=0; i<countSam; ++i) {
+		if (_ind == sams[i].chrIndex && chrstartPos == sams[i].pos)
 			return 0;
 	}
 	sams[countSam].chrIndex = ind;
@@ -1006,7 +1006,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	
 
 
-	uint8_t  ind;
+	int  ind;
 	uint32_t r_startP;
 	uint32_t chrstartPos;
 	char  	 trans_cigar[50];
@@ -1044,9 +1044,9 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 			break;
 	chrstartPos = r_startP - chrStartP[ind-1];
 	// if exists;
-
+	uint32_t _ind = ind;
 	for (uint8_t i=0; i<countSam; ++i) {
-		if (ind == sams[i].chrIndex && chrstartPos == sams[i].pos)
+		if (_ind == sams[i].chrIndex && chrstartPos == sams[i].pos)
 			return 0;
 	}
 	sams[countSam].chrIndex = ind;

@@ -413,7 +413,6 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 
 	}
 	bool extendWaitingLen = false;
-
 	if (1 != sign) {
 		extendWaitingLen = true;
 		//recuculate extending waiting length
@@ -1176,6 +1175,7 @@ void Aligner::Runtask()
 		while (kseq_read(seqs)>=0) {
 			//fprintf(stderr,"%d\n",seqs->last_char);
 			revComRead(seqs->seq.s, seqs->seq.rs, seqs->seq.l);
+
 			uint16_t sam_details = applyNonSV(seqs, rhashtab, rrhashtab, sams, sed_rec, sed_hit_times, unused_bkt);
 
 			if (!sam_details && !(seqs->seq.l < LEN_BASES)) {
@@ -1186,7 +1186,7 @@ void Aligner::Runtask()
 
 			} else
 			 	sam_details = sam_details << 1|1;
-			//printf("%s\t%u\n",seqs->name.s,sam_details);
+			
 			outputSam(seqs, sams, &svsams, &sam_details, 1);
 		}
 		kseq_destroy(seqs);
