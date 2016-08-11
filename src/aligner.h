@@ -75,9 +75,8 @@ typedef struct {
 }aux_var;
 
 class Aligner {
-	bkt2 		preserved[20];//should be a defined number write
-	uint32_t 	pos[20];//write	
-	uint32_t 	chrIndex[20];//write
+	//uint32_t 	pos[20];//write	
+	//uint32_t 	chrIndex[20];//write
 	int 		countChr;//readable  
 	char 		*genome;//readable
 	char 		*genome_e;

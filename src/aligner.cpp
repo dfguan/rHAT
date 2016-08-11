@@ -363,7 +363,7 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 	int 			flag = 0;
 	int 			sign = 0;
 	int 			usedArray = 0;
-
+	bkt2 			preserved[20];
 	//uint8_t 		posCount = 0;
 	RHashtable 		*usedhash;
 	char 			*_usedread;
@@ -595,15 +595,15 @@ int Aligner::conductAlign(kseq_t *trunk, char *read, char *rcRead, int lenRead, 
 
 	int 			flag = 0;
 	int 			sign = 0;
-	int 			usedArray = 0;
-
+	//int 			usedArray = 0;
+	//bkt2			preserved[20];
 	//uint8_t 		posCount = 0;
 	RHashtable 		*usedhash;
 	char 			*_usedread;
 	int 			countSam = 0;
 
 	for (uint32_t i=0; i< opt->canN&&!cansHeap.empty();++i) {
-		preserved[usedArray++] = cansHeap.top();
+		//preserved[usedArray++] = cansHeap.top();
 
 		Graphic 		gra(genome, genome_e);
 		seq_num_temp = cansHeap.top().seq_num;

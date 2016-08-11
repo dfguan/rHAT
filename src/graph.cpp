@@ -930,7 +930,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		readqry_ = readqry;
 		refqry_ = refqry;
 
-		sams[countSam].score = ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len , &qlen, &tlen, &cigar, &n_cigar) - read_len;
+		sams[countSam].score += ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len , &qlen, &tlen, &cigar, &n_cigar) - read_len;
 		//score += ksw_global(read_len,readStartP,ref_len,refStartP,5,mat,GAPOPEN,GAPEXTENDED,read_len,&n_cigar,&cigar);
 		//fprintf(stderr,"%d\n",score);
 		
@@ -1245,7 +1245,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		readqry_ = readqry;
 		refqry_ = refqry;
 
-		sams[countSam].score = ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len , &qlen, &tlen, &cigar, &n_cigar) - read_len;
+		sams[countSam].score += ksw_extend_core(read_len, readqry_, ref_len, refqry_, 5, mat, gapo, gape, 40, read_len , &qlen, &tlen, &cigar, &n_cigar) - read_len;
 		//score += ksw_global(read_len,readStartP,ref_len,refStartP,5,mat,GAPOPEN,GAPEXTENDED,read_len,&n_cigar,&cigar);
 		//fprintf(stderr,"%d\n",score);
 		
@@ -1340,7 +1340,7 @@ int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,boo
 	for (int i=0;i<nodeSize;++i) {
 		if (node[i].read_seq <= waitingLen) {
 			backtrace[i] = 0;
-			++counterP;
+			//++counterP;
 		}
 		else
 			break;
@@ -1357,7 +1357,7 @@ int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,boo
 		}
 	}
 */
-	if ( 0 == counterP ) return -1;
+	//if ( 0 == counterP ) return -1;
 	//connect middle part
 	for (int i=1; i< nodeSize - 1; i++) {
 		//counterP = 0;
@@ -1403,7 +1403,7 @@ int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,boo
 
 
 	//connnect to tail
-	counterP = 0;
+	//counterP = 0;
 	for (int i=nodeSize -2;i>=1;--i) {
 		if (node[i].read_seq + waitingLen + node[i].len > node[nodeSize -1].read_seq ) {
 			++counterP;
@@ -1412,7 +1412,7 @@ int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,boo
 				backtrace[nodeSize-1] = i;
 
 			}
-		} else break;
+		} 
 	}
 /*
 	if (0 == counterP) {
@@ -1522,7 +1522,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 	for (int i=0;i<nodeSize;++i) {
 		if (node[i].read_seq <= waitingLen) {
 			backtrace[i] = 0;
-			++counterP;
+			//++counterP;
 		}
 		else
 			break;
@@ -1539,7 +1539,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 		}
 	}
 */
-	if ( 0 == counterP ) return -1;
+	//if ( 0 == counterP ) return -1;
 	//connect middle part
 	for (int i=1; i< nodeSize - 1; i++) {
 		//counterP = 0;
@@ -1585,7 +1585,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 
 
 	//connnect to tail
-	counterP = 0;
+	//counterP = 0;
 	for (int i=nodeSize -2;i>=1;--i) {
 		if (node[i].read_seq + waitingLen + node[i].len > node[nodeSize -1].read_seq ) {
 			++counterP;
@@ -1594,7 +1594,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 				backtrace[nodeSize-1] = i;
 
 			}
-		} else break;
+		} 
 	}
 /*
 	if (0 == counterP) {
@@ -1696,7 +1696,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 	for (int i=0;i<nodeSize;++i) {
 		if (node[i].read_seq <= waitingLen) {
 			backtrace[i] = 0;
-			++counterP;
+			//++counterP;
 		}
 		else
 			break;
@@ -1713,7 +1713,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 		}
 	}
 */
-	if ( 0 == counterP ) return -1;
+	//if ( 0 == counterP ) return -1;
 	//connect middle part
 	for (int i=1; i< nodeSize - 1; i++) {
 		//counterP = 0;
@@ -1759,7 +1759,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 
 
 	//connnect to tail
-	counterP = 0;
+	//counterP = 0;
 	for (int i=nodeSize -2;i>=1;--i) {
 		if (node[i].read_seq + waitingLen + node[i].len > node[nodeSize -1].read_seq ) {
 			++counterP;
@@ -1768,7 +1768,7 @@ int 	Graphic::dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref
 				backtrace[nodeSize-1] = i;
 
 			}
-		} else break;
+		} 
 	}
 /*
 	if (0 == counterP) {
