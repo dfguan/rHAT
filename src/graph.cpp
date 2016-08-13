@@ -663,6 +663,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//sams[countSam].bodyScore = 0;
 	sams[countSam].score = 0;
 
+	int matchScore = mat[0];
 
 	char *readStartP;
 	char *refStartP;
@@ -710,7 +711,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		//transIntoDec(readqry,revreadqry,read_len);
 		//refStartP = ref + node[order[order_len-1]].ref_seq - read_len;
 		//prseq(refStartP,read_len,true);
-		refStartP 		= 	ref + node[order[order_len-1]].ref_seq - read_len;
+		refStartP = ref + node[order[order_len-1]].ref_seq - read_len;
 		if (refStartP < ref_s) { refStartP = ref_s; ref_len = left_start;}
 
 		revstr(refqry,refStartP,ref_len);
@@ -796,7 +797,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		//sams[countSam]._cigar[startPosCigar] = 'M';
 		//++startPosCigar;
 		//deal with different one
-		sams[countSam].score += node[order[i]].len;
+		sams[countSam].score += node[order[i]].len * matchScore;
 		//cout<<node[order[i]].len<<"\t"<<score<<'\t'<<"1"<<endl;
 		readStartP = read + node[order[i]].read_seq + node[order[i]].len;
 		refStartP = ref + node[order[i]].ref_seq + node[order[i]].len;
@@ -910,7 +911,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//sams[countSam].cigar.append(trans_cigar);
 	countM += node[order[1]].len;
 
-	sams[countSam].score += node[order[1]].len;
+	sams[countSam].score += node[order[1]].len * matchScore;
 	//cout<<"\t"<<score<<'\t'<<"5"<<endl;
 	readStartP = read + node[order[1]].read_seq + node[order[1]].len;
 	refStartP = ref + node[order[1]].ref_seq + node[order[1]].len;
@@ -973,7 +974,8 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//calculate 0 to order[order_len-1];
 	//fprintf(stderr,"len%d",order_len);
 	//int score 	= 	0 ;
-
+	
+	int matchScore = mat[0];
 	sams[countSam].cigar = "";
 	//sams[countSam].tailCigar = "";
 	//sams[countSam].headScore = 0;
@@ -1109,7 +1111,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 		//sams[countSam]._cigar[startPosCigar] = 'M';
 		//++startPosCigar;
 		//deal with different one
-		sams[countSam].score += node[order[i]].len;
+		sams[countSam].score += node[order[i]].len * matchScore;
 		//cout<<node[order[i]].len<<"\t"<<score<<'\t'<<"1"<<endl;
 		readStartP = read + node[order[i]].read_seq + node[order[i]].len;
 		refStartP = ref + node[order[i]].ref_seq + node[order[i]].len;
@@ -1225,7 +1227,7 @@ int 	Graphic::CalEditDistancewithCigar(int *order, int order_len, char *read, ui
 	//sams[countSam].cigar.append(trans_cigar);
 	countM += node[order[1]].len;
 
-	sams[countSam].score += node[order[1]].len;
+	sams[countSam].score += node[order[1]].len * matchScore;
 	//cout<<"\t"<<score<<'\t'<<"5"<<endl;
 	readStartP = read + node[order[1]].read_seq + node[order[1]].len;
 	refStartP = ref + node[order[1]].ref_seq + node[order[1]].len;
