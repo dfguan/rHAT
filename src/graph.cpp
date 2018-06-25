@@ -260,30 +260,27 @@ int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char
 {
 	uint16_t seq_counter[lenRef];// = new uint16_t[lenRef];
 	uint16_t p2startPos[lenRef]; //= new uint16_t [lenRef];
-	for(uint32_t i=0;i<lenRef;++i) {
-		seq_counter[i] = 0;
-	}
+	memset(seq_counter, 0, lenRef * sizeof(uint16_t));	
 
 	buildCounter(ref,lenRef,rhashtab,seq_counter,p2startPos);
 	int flag;
 	flag = createVertex(rhashtab->seq_num, ref, seq_counter,p2startPos, lenRef, 0,rhashtab->len_sed, read, lenRead,0, VERTEX_LIMIT);
-	//cout<<flag<<endl;
 
 	if (flag == -1) {
 		if (lenRead < STD_EXTRACT) return -1;
 		node.clear();
 		livingSeed.clear();
-		//cout<<"ccccc"<<endl;
 		int sign;
 		vertex head,tail;
-		createVertex(rhashtab->seq_num, ref, seq_counter, p2startPos, lenRef - lenRead + STD_EXTRACT,0, rhashtab->len_sed,  read, STD_EXTRACT,0, -1);
-		sign = findPos(lenRef - lenRead + STD_EXTRACT,STD_EXTRACT,waitingLen,true, &head);
+		uint32_t diff = lenRef > lenRead ? lenRef - lenRead : 0;
+		createVertex(rhashtab->seq_num, ref, seq_counter, p2startPos, diff + STD_EXTRACT,0, rhashtab->len_sed,  read, STD_EXTRACT,0, -1);
+		sign = findPos(diff + STD_EXTRACT,STD_EXTRACT,waitingLen,true, &head);
 		node.clear();
 		livingSeed.clear();
 		if (sign == -1)
 			return -1;
-		createVertex(rhashtab->seq_num, ref, seq_counter, p2startPos, lenRef - lenRead + STD_EXTRACT, lenRead - STD_EXTRACT, rhashtab->len_sed,  read, STD_EXTRACT,lenRead - STD_EXTRACT, -1);
-		sign = findPos(lenRef - lenRead + STD_EXTRACT,STD_EXTRACT,waitingLen,false, &tail);
+		createVertex(rhashtab->seq_num, ref, seq_counter, p2startPos, diff + STD_EXTRACT, lenRef - diff - STD_EXTRACT, rhashtab->len_sed,  read, STD_EXTRACT,lenRead - STD_EXTRACT, -1);
+		sign = findPos(diff + STD_EXTRACT,STD_EXTRACT,waitingLen,false, &tail);
 		tail.read_seq += lenRead - STD_EXTRACT;
 		tail.ref_seq += lenRead - STD_EXTRACT;
 		node.clear();
@@ -310,19 +307,20 @@ int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char
 	//cout<<flag<<endl;
 
 	if (flag == -1) {
-		if (lenRead < STD_EXTRACT) return -1;
+		if (lenRead < STD_EXTRACT || lenRef < STD_EXTRACT) return -1;
 		node.clear();
 		livingSeed.clear();
 		//cout<<"ccccc"<<endl;
 		int sign;
 		vertex head,tail;
-		createVertex(rhashtab->seq_num, ref, seq_counter, p2startPos, lenRef - lenRead + STD_EXTRACT,0, rhashtab->len_sed,  read, STD_EXTRACT,0, -1);
+		uint32_t diff = lenRef > lenRead ? lenRef - lenRead : 0;
+		createVertex(rhashtab->seq_num, ref, seq_counter, p2startPos, diff + STD_EXTRACT, 0, rhashtab->len_sed,  read, STD_EXTRACT,0, -1);
 		sign = findPos(lenRef - lenRead + STD_EXTRACT,STD_EXTRACT,waitingLen,true, &head);
 		node.clear();
 		livingSeed.clear();
 		if (sign == -1)
 			return -1;
-		createVertex(rhashtab->seq_num, ref, seq_counter, p2startPos, lenRef - lenRead + STD_EXTRACT, lenRead - STD_EXTRACT, rhashtab->len_sed,  read, STD_EXTRACT,lenRead - STD_EXTRACT, -1);
+		createVertex(rhashtab->seq_num, ref, seq_counter, p2startPos, diff + STD_EXTRACT, lenRef - diff - STD_EXTRACT, rhashtab->len_sed,  read, STD_EXTRACT,lenRead - STD_EXTRACT, -1);
 		sign = findPos(lenRef - lenRead + STD_EXTRACT,STD_EXTRACT,waitingLen,false, &tail);
 		tail.read_seq += lenRead - STD_EXTRACT;
 		tail.ref_seq += lenRead - STD_EXTRACT;

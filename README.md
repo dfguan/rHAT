@@ -1,4 +1,4 @@
-###Introduction
+### Introduction
 
 rHAT is a seed-and-extension-based noisy long read alignment tool. It is suitable for aligning 3rd generation sequencing reads which are in large read length with relatively high error rate, especially Pacbio's Single Molecule Read-time (SMRT) sequencing reads. 
 
@@ -11,7 +11,7 @@ rHAT is mainly designed by Bo Liu and developed by Dengfeng Guan in Center for B
 
 ---
 
-###Memory requirement
+### Memory requirement
 
 The memory usage of rHAT can fit the configurations of most modern servers and workstations. Its peak memory footprint depends on the length of reference genome and the k-mer size parameter setting. We investigated its memory usage for aligning two real SMRT datasets, respectively sequenced from H. sapiens and D. melanogaster genomes, on a server with Intel E5640 CPU at 2.67 GHz, 24 Gigabytes RAM running Linux Ubuntu 10.04. The read were respectively aligned to GRCh37/hg19 and DM5 reference genomes, and the peak memory footprint is as following.
 
@@ -29,7 +29,7 @@ k-mer size=15 (max k-mer size),  4.76 Gigabytes
 
 ---
 
-###Installation
+### Installation
 
 Current version of rHAT needs to be run on Linux operating system.
 
@@ -39,7 +39,7 @@ The makefile is attached. Use the make command for generating the executable fil
 
 ---
 
-###Synopsis
+### Synopsis
 ```
 rHAT-indexer [-k kmerSize] <HashIndexDir> <Reference>
 
@@ -53,7 +53,7 @@ Align read to its primitive location in Reference
 
 ---
 
-###Parameters (could be updated in the future for adding new functions)
+### Parameters (could be updated in the future for adding new functions)
 ```
 rHAT-indexer:
 -k, --kmer-size      INT    The size of the k-mers extracted from the reference genome for indexing[13].
@@ -97,7 +97,7 @@ rHAT-aligner:
 
 ---
 
-###Quick start
+### Quick start
 ```
 Genome indexing:
 
@@ -110,7 +110,7 @@ rHAT-aligner Genome_Index_Dir Fastq_File Genome_File > Sam_File
 
 ---
 
-###Simulation benchmarking:
+### Simulation benchmarking:
 
 We simulated a series of datasets from various genomes, i.e., Escherichia coli (complete genome of the 536 strain), Saccharomyces cerevisiae (build sacCer3), Drosophila melanogaster (build DM3), Arabidopsis thaliana (build TAIR10) and Homo sapiens (build GCRh37/hg19), through PBSim (Ono et. al., 2013, Verison 1.0.3). The read length is analogous to Pacbio P5/C3 release. The average read length is 8000 basepairs. These datasets helped us to evaluate the performance of rHAT.
 The datasets have been uploaded to Google Drive, and can be downloaded through the following link:
@@ -118,12 +118,12 @@ https://drive.google.com/folderview?id=0Bwibkj8plEJrZFlNOG1rd3hBRWM&usp=sharing
 
 ---
 
-###Reference
+### Reference
 
 rHAT: Fast aligning noisy long read with regional hashing. *Accepted by Bioinformatics*.
 
 ---
 
-###Contact
+### Contact
 
 For advising, bug reporting and requiring help, please contact dfguan@hit.edu.cn

@@ -372,7 +372,7 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 	for (uint32_t i=0; i< opt->canN&&!cansHeap.empty();++i) {
 		preserved[usedArray++] = cansHeap.top();
 
-		Graphic 		gra(genome, genome_e);
+		Graphic 	gra(genome, genome_e);
 		seq_num_temp = cansHeap.top().seq_num;
 		rc = cansHeap.top().isrc;
 
