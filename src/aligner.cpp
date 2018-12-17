@@ -123,6 +123,7 @@ uint32_t Aligner::gen_sed(char *bases, uint32_t len_bases, uint32_t *_sed_rec)
 {
 	uint32_t pre;
 	uint32_t count = 0;
+	if (len_bases < opt->len_sed) return count; 
 	//uint32_t offset = groupNum * LEN_BASES;
 	//initiate the first one and for the others will be obtained by the its previous value.
 	//pay attention to limitation of the program there may be something wrong
@@ -372,7 +373,7 @@ int Aligner::conductAlign(kseq_t *trunk,std::priority_queue <bkt2> &cansHeap, RH
 	for (uint32_t i=0; i< opt->canN&&!cansHeap.empty();++i) {
 		preserved[usedArray++] = cansHeap.top();
 
-		Graphic 	gra(genome, genome_e);
+		Graphic gra(genome, genome_e);
 		seq_num_temp = cansHeap.top().seq_num;
 		rc = cansHeap.top().isrc;
 
