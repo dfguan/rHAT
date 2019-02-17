@@ -46,11 +46,11 @@ typedef struct svsam_rec {
 	uint16_t 	flag;
 	
 	uint32_t 	ref_end;
-	uint16_t 	read_end;
-	uint16_t	read_start;
+	uint32_t 	read_end;
+	uint32_t	read_start;
 	uint32_t 	ref_start;
-	uint16_t	lclip;
-	uint16_t 	rclip;
+	uint32_t	lclip;
+	uint32_t 	rclip;
 	int16_t 	MAQ;
 	struct svsam_rec &	operator=(const struct svsam_rec &r)  
 	{ 
@@ -81,10 +81,10 @@ typedef struct svsam_rec {
 
 class RHashtable {
 public:
-	uint16_t 		*p2leftSeq;
+	uint32_t 		*p2leftSeq;
 	uint16_t 		*left_seq;
-	uint16_t 		*p2seqNum;
-	uint16_t  		*seq_num;
+	uint32_t 		*p2seqNum;
+	uint32_t  		*seq_num;
 	uint32_t 		len_sed;
 	uint32_t 		forelength;
 	//char 				*readseq;
@@ -143,9 +143,9 @@ public:
 		bool rc, uint32_t *startPos,  int countChr,SvSam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape);
 private:
 	int 	transIntoDec(uint8_t *transstr,char *str,int length);
-	void 	buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uint16_t *seq_counter, uint16_t *p2startPos);
+	void 	buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uint32_t *seq_counter, uint32_t *p2startPos);
 	//void	buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uint16_t *seq_counter, uint16_t *p2startPos, char *readdebug);
-	int 	createVertex(uint16_t *seq_n, char *ref, uint16_t *seq_counter, uint16_t *p2startPos, uint32_t lenRef, uint32_t offset_ref, uint32_t kmer, char *read,uint32_t lenRead, uint32_t offset_read, uint32_t vertex_lim);
+	int 	createVertex(uint32_t *seq_n, char *ref, uint32_t *seq_counter, uint32_t *p2startPos, uint32_t lenRef, uint32_t offset_ref, uint32_t kmer, char *read,uint32_t lenRead, uint32_t offset_read, uint32_t vertex_lim);
 	int 	CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t readlen, char *ref, uint32_t reflen, uint32_t left_start,
 			bool rc, uint32_t *startPos, int countChr,Sam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape);
 	int 	CalEditDistancewithCigar(int *order, int order_len, char *read, uint32_t readlen, char *ref, uint32_t reflen, uint32_t left_start,
@@ -158,7 +158,7 @@ private:
 			bool rc, uint32_t *startPos,  int countChr,Sam_Rec *sam, int countSam, int8_t *matrix, int gapo, int gape);
 	int 	dealGraph(uint32_t lenRef, uint32_t lenRead, char *read, char *ref, int *score, uint32_t waitingLen, uint32_t left_start,
 			bool rc, uint32_t *startPos,  int countChr,SvSam_Rec *sam, int countSam, int8_t *matrix, int gapo, int gape);
-	void 	createLimVertex(uint16_t *seq_n,char *ref, uint32_t lenRef, char *read, uint32_t lenRead, uint16_t *seq_counter,uint16_t *p2startPos, uint32_t kmer, vertex head, vertex tail);
+	void 	createLimVertex(uint32_t *seq_n,char *ref, uint32_t lenRef, char *read, uint32_t lenRead, uint32_t *seq_counter,uint32_t *p2startPos, uint32_t kmer, vertex head, vertex tail);
 	//void 	buildEdge(Graphic *gra);
 };
 extern const uint8_t seq_nt4_tablet[];

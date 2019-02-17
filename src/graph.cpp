@@ -71,11 +71,11 @@ RHashtable::RHashtable(uint32_t kmer,uint32_t forelen, uint32_t len_limit)
 {
 	limitOfp2leftSeq = (1<<(forelen << 1)) + 1;
 
-	p2leftSeq = new uint16_t[limitOfp2leftSeq];
+	p2leftSeq = new uint32_t[limitOfp2leftSeq];
 
 	left_seq = new uint16_t [len_limit];
-	p2seqNum = new uint16_t [len_limit];
-	seq_num = new uint16_t [len_limit];
+	p2seqNum = new uint32_t [len_limit];
+	seq_num = new uint32_t [len_limit];
 	kmer_value = new uint32_t [len_limit];
 	//seq_number = new uint16_t [len_limit];
 	//order = new uint16_t [len_limit];
@@ -110,8 +110,8 @@ RHashtable::~RHashtable()
 
 int compare_kmer_value(const void *p, const void *q, void *t)
 {
-	uint16_t f = *(uint16_t *)p;
-	uint16_t h = *(uint16_t *)q;
+	uint32_t f = *(uint32_t *)p;
+	uint32_t h = *(uint32_t *)q;
 	uint32_t *s = (uint32_t *)t;
  	if (s[f] == s[h]) 	return f > h;
  	return s[f] - s[h];
@@ -147,7 +147,7 @@ void RHashtable::buildRHash(char *seq, uint32_t lenSeq)
 	}
 
 	//sort them
-	qsort_r(seq_num,lenSeq - len_sed + 1, sizeof(uint16_t), compare_kmer_value, kmer_value);
+	qsort_r(seq_num,lenSeq - len_sed + 1, sizeof(uint32_t), compare_kmer_value, kmer_value);
 
 	// push them into rhash table
 	uint32_t move = (len_sed - forelength) << 1;
@@ -211,7 +211,7 @@ void RHashtable::buildRHash(char *seq, uint32_t lenSeq)
 
 }
 
-uint16_t binsearch(uint16_t sval,uint16_t low,uint16_t high,uint16_t *bkt)
+uint32_t binsearch(uint32_t sval,uint32_t low,uint32_t high,uint16_t *bkt)
 {
   if (sval<bkt[low]||sval>bkt[high])
   	return 0xffff;
@@ -230,7 +230,7 @@ uint16_t binsearch(uint16_t sval,uint16_t low,uint16_t high,uint16_t *bkt)
 }
 
 
-uint16_t binsearchPos(uint16_t sval,uint16_t low,uint16_t high,uint16_t *bkt)
+uint32_t binsearchPos(uint32_t sval,uint32_t low,uint32_t high,uint32_t *bkt)
 {
   if (sval<bkt[low])
   	return 0;
@@ -258,9 +258,9 @@ Graphic::Graphic(char *_ref_s, char *_ref_e)
 int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen,
  uint32_t left_start,bool rc, uint32_t *startPos,  int countChr, Sam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape)
 {
-	uint16_t seq_counter[lenRef];// = new uint16_t[lenRef];
-	uint16_t p2startPos[lenRef]; //= new uint16_t [lenRef];
-	memset(seq_counter, 0, lenRef * sizeof(uint16_t));	
+	uint32_t seq_counter[lenRef];// = new uint16_t[lenRef];
+	uint32_t p2startPos[lenRef]; //= new uint16_t [lenRef];
+	memset(seq_counter, 0, lenRef * sizeof(uint32_t));	
 
 	buildCounter(ref,lenRef,rhashtab,seq_counter,p2startPos);
 	int flag;
@@ -295,8 +295,8 @@ int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char
 int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char *read, uint32_t lenRead,int *score, uint32_t waitingLen,
  uint32_t left_start,bool rc, uint32_t *startPos,  int countChr, SvSam_Rec *sam, int countSam, int8_t *mat, int gapo, int gape)
 {
-	uint16_t seq_counter[lenRef];// = new uint16_t[lenRef];
-	uint16_t p2startPos[lenRef]; //= new uint16_t [lenRef];
+	uint32_t seq_counter[lenRef];// = new uint16_t[lenRef];
+	uint32_t p2startPos[lenRef]; //= new uint16_t [lenRef];
 	for(uint32_t i=0;i<lenRef;++i) {
 		seq_counter[i] = 0;
 	}
@@ -333,7 +333,7 @@ int Graphic::applyGraphic(RHashtable *rhashtab, char *ref, uint32_t lenRef, char
 	return dealGraph(lenRef, lenRead, read, ref, score, waitingLen, left_start, rc, startPos,  countChr, sam, countSam, mat, gapo, gape);
 }
 
-void Graphic::buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uint16_t *seq_counter, uint16_t *p2startPos)
+void Graphic::buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uint32_t *seq_counter, uint32_t *p2startPos)
 {
 
 
@@ -350,7 +350,7 @@ void Graphic::buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uin
 
 
 
-	uint16_t 	hitPos;
+	uint32_t 	hitPos;
 	//uint32_t seq_counter_count = 0;
 
 	uint32_t 	pre;
@@ -404,8 +404,8 @@ void Graphic::buildCounter(char *seq, uint32_t len_seq, RHashtable *rhashtab,uin
 	}
 }
 
-void Graphic::createLimVertex(uint16_t *seq_n,char *ref, uint32_t lenRef, char *read, uint32_t lenRead,
-	uint16_t *seq_counter,uint16_t *p2startPos, uint32_t kmer, vertex head, vertex tail)
+void Graphic::createLimVertex(uint32_t *seq_n,char *ref, uint32_t lenRef, char *read, uint32_t lenRead,
+	uint32_t *seq_counter,uint32_t *p2startPos, uint32_t kmer, vertex head, vertex tail)
 {
 	double indel = (double)(tail.read_seq - head.read_seq)/(double)(tail.ref_seq - head.ref_seq);
 
@@ -461,7 +461,7 @@ void Graphic::createLimVertex(uint16_t *seq_n,char *ref, uint32_t lenRef, char *
 			// find expected read pos:
 			// binsearch its pos
 			//reaturn all
-			uint16_t expected_read_seq = head.read_seq + (uint16_t)(indel*(double)(i - head.ref_seq));
+			uint32_t expected_read_seq = head.read_seq + (uint32_t)(indel*(double)(i - head.ref_seq));
 
 			uint32_t ind_beg = binsearchPos(expected_read_seq, 0, seq_counter[i]-1, seq_n + p2startPos[i]);
 
@@ -473,7 +473,7 @@ void Graphic::createLimVertex(uint16_t *seq_n,char *ref, uint32_t lenRef, char *
 			uint32_t undiscovered = seq_counter[i] - counterOfLivingSeed;
 
 			for(uint32_t j=ind_beg;j<ind_end;++j) {
-				uint16_t seq = seq_n[p2startPos[i]+j];
+				uint32_t seq = seq_n[p2startPos[i]+j];
 
 				uint32_t t;
 				for(t=0;t<counterOfLivingSeed;++t) {
@@ -508,7 +508,7 @@ void Graphic::createLimVertex(uint16_t *seq_n,char *ref, uint32_t lenRef, char *
 	return ;
 }
 
-int	Graphic::createVertex(uint16_t *seq_n, char *ref, uint16_t *seq_counter, uint16_t *p2startPos, uint32_t lenRef, uint32_t offset_ref,
+int	Graphic::createVertex(uint32_t *seq_n, char *ref, uint32_t *seq_counter, uint32_t *p2startPos, uint32_t lenRef, uint32_t offset_ref,
 	uint32_t kmer, char *read,uint32_t lenRead, uint32_t offset_read, uint32_t vertex_limit)
 {
 	vertex 		filled_element;
@@ -575,7 +575,7 @@ int	Graphic::createVertex(uint16_t *seq_n, char *ref, uint16_t *seq_counter, uin
 			uint32_t undiscovered = seq_counter[i] - counterOfLivingSeed;
 
 			for(uint32_t j=0;j<seq_counter[i];++j) {
-				uint16_t seq = seq_n[p2startPos[i]+j];
+				uint32_t seq = seq_n[p2startPos[i]+j];
 
 				if (seq < offset_read || seq > lenRead + offset_read - 1)
 					continue;
