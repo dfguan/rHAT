@@ -1302,13 +1302,13 @@ int 	Graphic::findPos(uint32_t lenRef, uint32_t lenRead, uint32_t waitingLen,boo
 
 	int counterP = 0;
 
-	int nodeSize = node.size();
 
 	sort(node.begin(),node.end());
 
 	node.insert(node.begin(),start);//maybe changed
 	node.push_back(end);
 
+	int nodeSize = node.size();
 
 	//cout<<nodeSize<<endl;
 	//prseq(read,lenRead,true);

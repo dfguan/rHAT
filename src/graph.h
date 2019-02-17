@@ -106,17 +106,17 @@ public:
 
 class vertex{
 public:
-    uint16_t		read_seq;
-    uint16_t 		ref_seq;
-    uint16_t 		len;
+    uint32_t		read_seq;
+    uint32_t 		ref_seq;
+    uint32_t 		len;
     bool 	operator<(const vertex &r) const { return read_seq < r.read_seq; }
 };
 
 class ASeed{
 public:
-    uint16_t		read_seq;
+    uint32_t		read_seq;
    // uint16_t 		ref_seq;
-    uint16_t 		left_time;
+    uint32_t 		left_time;
     bool 	operator<(const ASeed &r) const { return read_seq < r.read_seq; }
     ASeed &	operator=(const ASeed &r)  { read_seq = r.read_seq; left_time = r.left_time; return *this;}
     //bool 	operator == (const ASeed &r) const { return ((read_seq == r.read_seq)&&(ref_seq == r.ref_seq));}
